@@ -5,7 +5,6 @@ import RoutesApp from './Router/RoutesApp'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    {/* <App /> */}
     <RoutesApp />
-  </StrictMode>,
+  </StrictMode>
 )

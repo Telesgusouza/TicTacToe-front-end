@@ -1,7 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+:root {
+  --lightBlue: #31c3bd;
+  --lightBlueHover: #65e9e4;
+
+  --lightYallow: #F2B137;
+  --lightYallowHover: #FFC860;
+
+  --darkNavy: #1a2a33;
+  --semiDarkNavy: #1f3641;
+
+  --silver: #a8bfc9;
+  --silverHover: #dbe8ed;
+}
+
 * {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
+
+  font-family: "Outfit", sans-serif;
+}
+
+body {
+  background-color: var(--darkNavy);
 }
 
 button {
