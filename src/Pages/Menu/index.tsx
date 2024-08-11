@@ -1,7 +1,14 @@
+import { useNavigate } from 'react-router-dom';
 import Button from '../../Components/Button';
 import * as Styled from './style';
 
 function Menu() {
+
+    const navigation = useNavigate();
+
+    function handleNavigation(url: string) {
+        navigation( "/"+ url, {replace: true});
+    }
 
     return (
         <Styled.Container>
@@ -9,8 +16,8 @@ function Menu() {
 
                 <nav>
                     <ul>
-                        <li>Login</li> |
-                        <li>registre-se</li>
+                        <li onClick={() => handleNavigation("login")} >Login</li> |
+                        <li onClick={() => handleNavigation("register")} >registre-se</li>
                     </ul>
                 </nav>
             </Styled.Header>

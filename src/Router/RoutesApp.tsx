@@ -1,7 +1,8 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Authentication from "../Pages/Authentication";
-import Menu from "../Pages/Menu";
 
+import Login from "../Pages/Login";
+import Register from "../Pages/Register";
+import Menu from "../Pages/Menu";
 
 function RoutesApp() {
 
@@ -9,7 +10,8 @@ function RoutesApp() {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<Menu />} />
-                <Route path="/authentication" element={<Authentication />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
             </Routes>
         </BrowserRouter>
     )

@@ -28,6 +28,7 @@ export const Header = styled.header`
 
         padding: 0 5px;
 
+        transition: color .14s ease;
         cursor: pointer;
 
         &::after {
@@ -43,9 +44,13 @@ export const Header = styled.header`
             transition: all .14s ease;
         }
 
-        &:hover::after {
-            left: 0;
-            width: 100%;
+        &:hover {
+            color: var(--silverHover);
+
+            &::after {
+                left: 0;
+                width: 100%;
+            }
         }
     }
 `;
