@@ -41,3 +41,7 @@ export const PhotoInput = styled.div`
         object-fit: cover;
     }
 `;
+
+export const Input = styled.input`
+
+`;
