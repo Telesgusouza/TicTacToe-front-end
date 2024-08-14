@@ -65,4 +65,9 @@ export const Button = styled.button<IProps>`
         border-bottom-width: 0px;
     `}
 
+    &:disabled {
+        opacity: .6;
+        cursor: not-allowed;
+    }
+
 `;

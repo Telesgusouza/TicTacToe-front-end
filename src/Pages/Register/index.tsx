@@ -1,15 +1,19 @@
-import * as Styled from './style';
+import { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
+import * as Styled from './style';
 
 import Button from "../../Components/Button";
 import Form from "../../Components/Form";
 import HeaderAuthentication from "../../Components/HeaderAuthentication";
+import Input from '../../Components/Input';
+
+import baseUrl from '../../Config/baseUrl';
 
 import imgNoUser from '../../assets/no-user.svg';
-import { useEffect, useState } from 'react';
-import Input from '../../Components/Input';
-import axios from 'axios';
-import baseUrl from '../../Config/baseUrl';
+import imgLockClose from '../../assets/lock-close.svg';
+import imgLockOpen from '../../assets/lock-open.svg';
+
 
 function Register() {
 
@@ -22,6 +26,9 @@ function Register() {
     const [wrongName, setWrongName] = useState<boolean>(false);
     const [wrongEmail, setWrongEmail] = useState<boolean>(false);
     const [wrongPassword, setWrongPassword] = useState<boolean>(false);
+
+    const [seePassword, setSeePassword] = useState<boolean>(false);
+    const [btnPress, setBtnPress] = useState<boolean>(false);
 
     const navigate = useNavigate();
 
@@ -66,12 +73,13 @@ function Register() {
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
+        setBtnPress(true);
+
         const emailRegex = /^[a-zA-Z0-9_.±]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$/;
 
         setWrongName(name.length === 0);
         setWrongEmail(!emailRegex.test(email));
         setWrongPassword(password.length <= 5);
-
 
         try {
 
@@ -92,14 +100,18 @@ function Register() {
 
                 await handleSubmitFile(token.data.token);
 
-                navigate("/home", {replace: true});
+                navigate("/", { replace: true });
+
+                setBtnPress(false);
 
             }
         } catch (e) {
             console.error('error the register > ', e);
+            setBtnPress(false);
         }
 
     }
+
 
     async function handleSubmitFile(token: string) {
         if (file == null) {
@@ -118,7 +130,7 @@ function Register() {
             });
 
 
-        } catch(e) {
+        } catch (e) {
             console.error("error submit file > ", e);
         }
     }
@@ -156,16 +168,23 @@ function Register() {
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                 />
-                <Input
-                    error={wrongPassword}
 
-                    type="password"
-                    placeholder='Senha'
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                />
+                <Styled.InputPassword>
+                    <Input
+                        error={wrongPassword}
 
-                <Button btn='BUTTON_SILVER' option={false} >Registre-se</Button>
+                        type={seePassword ? "text" : "password"}
+                        placeholder='Senha'
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                    />
+
+                    <img src={seePassword ? imgLockOpen : imgLockClose } alt="icon for password" onClick={() => setSeePassword(!seePassword)} />
+                </Styled.InputPassword>
+
+
+
+                <Button btn='BUTTON_SILVER' option={false} disabled={btnPress} >Registre-se</Button>
 
                 <p>Já tem conta? <span onClick={() => handleNavigate("/login")} >Faça login</span></p>
 

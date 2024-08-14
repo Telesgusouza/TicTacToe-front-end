@@ -1,19 +1,23 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as Styled from './style'
 
 import HeaderAuthentication from '../../Components/HeaderAuthentication';
 import Button from '../../Components/Button';
 import Form from '../../Components/Form';
-import { useEffect, useState } from 'react';
 import Input from '../../Components/Input';
 
-function Login() {
+import imgLockClose from '../../assets/lock-close.svg';
+import imgLockOpen from '../../assets/lock-open.svg';
 
+function Login() {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
 
     const [wrongEmail, setWrongEmail] = useState<boolean>(false);
     const [wrongPassword, setWrongPassword] = useState<boolean>(false);
+
+    const [seePassword, setSeePassword] = useState<boolean>(false);
 
     const navigate = useNavigate();
 
@@ -61,14 +65,18 @@ function Login() {
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                 />
-                <Input
-                    error={wrongPassword}
+                <Styled.InputPassword>
+                    <Input
+                        error={wrongPassword}
 
-                    type="text"
-                    placeholder='Senha'
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                />
+                        type={seePassword ? "text" : "password"}
+                        placeholder='Senha'
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                    />
+
+                    <img src={seePassword ? imgLockOpen : imgLockClose } alt="icon for password" onClick={() => setSeePassword(!seePassword)} />
+                </Styled.InputPassword>
 
                 <Button btn='BUTTON_SILVER' option={false} >Entrar</Button>
 

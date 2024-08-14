@@ -7,12 +7,13 @@ interface IProps {
     btn: "BUTTON_YALLOW" | "BUTTON_BLUE" | "BUTTON_SILVER";
     option: boolean;
     borderBottom?: boolean;
+    disabled?: boolean; 
 }
 
-function Button({ children, btn, option, borderBottom = true }: IProps) {
+function Button({ children, btn, option, borderBottom = true, disabled = false }: IProps) {
 
     return(
-        <Styled.Button btn={btn} option={option} borderBottom={borderBottom} >
+        <Styled.Button btn={btn} option={option} borderBottom={borderBottom} disabled={disabled} >
             {children}
         </Styled.Button>
     )
