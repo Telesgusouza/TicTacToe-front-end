@@ -9,6 +9,8 @@ import Input from '../../Components/Input';
 
 import imgLockClose from '../../assets/lock-close.svg';
 import imgLockOpen from '../../assets/lock-open.svg';
+import axios from 'axios';
+import baseUrl from '../../Config/baseUrl';
 
 function Login() {
     const [email, setEmail] = useState<string>("");
@@ -38,14 +40,29 @@ function Login() {
         navigate(url, { replace: true });
     }
 
-    function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
         const emailRegex = /^[a-zA-Z0-9_.±]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$/;
         setWrongEmail(!emailRegex.test(email));
         setWrongPassword(password.length <= 5);
 
-        // if ()
+        if (emailRegex.test(email) && password.length >= 6) {
+            try {
+
+                const token = await axios.post(baseUrl + "/auth/login", {
+                    login: email,
+                    password: password
+                });
+
+                localStorage.setItem("token", token.data.token);
+
+                navigate("/", {replace: true});
+
+            } catch (e) {
+                console.error("error login > ", e);
+            }
+        }
 
     }
 
@@ -75,7 +92,7 @@ function Login() {
                         onChange={e => setPassword(e.target.value)}
                     />
 
-                    <img src={seePassword ? imgLockOpen : imgLockClose } alt="icon for password" onClick={() => setSeePassword(!seePassword)} />
+                    <img src={seePassword ? imgLockOpen : imgLockClose} alt="icon for password" onClick={() => setSeePassword(!seePassword)} />
                 </Styled.InputPassword>
 
                 <Button btn='BUTTON_SILVER' option={false} >Entrar</Button>
