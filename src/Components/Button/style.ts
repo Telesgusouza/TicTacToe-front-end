@@ -4,6 +4,8 @@ interface IProps {
     btn: "BUTTON_YALLOW" | "BUTTON_BLUE" | "BUTTON_SILVER";
     option: boolean;
     borderBottom: boolean;
+
+    hoverStyle: boolean;
 }
 
 export const Button = styled.button<IProps>`
@@ -34,19 +36,28 @@ export const Button = styled.button<IProps>`
         border-bottom-color: #118c87;
         background-color: var(--lightBlue);
 
-        &:hover {
-            background-color: var(--lightBlueHover);
-            border-bottom-color: var(--lightBlue);
+        ${
+            props.hoverStyle && css`
+                &:hover {
+                    background-color: var(--lightBlueHover);
+                    border-bottom-color: var(--lightBlue);
+                }            
+            `
         }
+
     `}
 
     ${props => props.btn === "BUTTON_YALLOW" && css`
         border-bottom-color: #cc8b13;
         background-color: var(--lightYallow);
 
-        &:hover {
-            background-color: var(--lightYallowHover);
-            border-bottom-color: var(--lightYallow);
+        ${
+            props.hoverStyle && css`
+                &:hover {
+                    background-color: var(--lightYallowHover);
+                    border-bottom-color: var(--lightYallow);
+                }
+            `
         }
 
     `}
@@ -55,10 +66,15 @@ export const Button = styled.button<IProps>`
         border-bottom-color: #6b8997;
         background-color: var(--silver);
 
-        &:hover {
-            background-color: var(--silverHover);
-            border-bottom-color: var(--silver);
+        ${
+            props.hoverStyle && css`
+                &:hover {
+                    background-color: var(--silverHover);
+                    border-bottom-color: var(--silver);
+                }
+            `
         }
+
     `}
 
     ${props => !props.borderBottom && css`

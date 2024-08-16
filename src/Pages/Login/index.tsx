@@ -55,8 +55,9 @@ function Login() {
                     password: password
                 });
 
-                localStorage.setItem("token", token.data.token);
+                const jsonToken = JSON.stringify(token.data.token);
 
+                localStorage.setItem("token", jsonToken);
                 navigate("/", {replace: true});
 
             } catch (e) {

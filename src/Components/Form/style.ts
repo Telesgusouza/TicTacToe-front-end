@@ -44,4 +44,8 @@ export const Form = styled.form`
             }
         }
     }
+
+    @media (max-width: 450px) {
+        padding: 24px 16px;
+    }
 `;

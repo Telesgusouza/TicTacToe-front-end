@@ -4,6 +4,11 @@ import * as Styled from './style';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import baseUrl from '../../Config/baseUrl';
+import { IRootReducer, IUser } from '../../Config/interfaces';
+import { useDispatch, useSelector } from 'react-redux';
+import ActionTypes from '../../Config/ActionTypes';
+
+
 
 function Menu() {
 
@@ -17,19 +22,25 @@ function Menu() {
             const jsonToken = localStorage.getItem("token");
 
             setLogged(false);
-            
-            if (jsonToken) {
-                const token = JSON.parse(jsonToken);
-                // const user = axios.get(baseUrl + );
 
-                /*
-                
-                ATENÇAÕ
-                ADICIONAR RECUPERAR DADOS DO USUARIO
-                
-                */
+            if (!!jsonToken) {
+                try {
+                    const token = JSON.parse(jsonToken);
 
-                setLogged(true);
+                    const requestUser = await axios.get(baseUrl + "/user", {
+                        'headers': {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    })
+
+                    const dataUser: IUser = requestUser.data;
+                    const jsonDataUser = JSON.stringify(dataUser);
+                    localStorage.setItem("user", jsonDataUser);
+
+                    setLogged(true);
+                } catch (e) {
+                    console.error("Error > ", e);
+                }
             }
         }
 
@@ -37,6 +48,8 @@ function Menu() {
     }, [])
 
     function handleNavigation(url: string) {
+        if (url === "home/online" && !logged) return;
+
         navigation("/" + url, { replace: true });
     }
 
@@ -65,9 +78,28 @@ function Menu() {
                 <h1>Jogo da velha</h1>
 
                 <ul>
-                    <li><Button btn='BUTTON_YALLOW' option={true} >ONLINE</Button></li>
-                    <li><Button btn='BUTTON_BLUE' option={true} >CO-OP LOCAL</Button></li>
-                    <li><Button btn='BUTTON_BLUE' option={true} >CONTRA A MAQUINA</Button></li>
+                    <li>
+                        <Button
+                            btn='BUTTON_YALLOW'
+                            option={true}
+                            disabled={!logged}
+                            onClick={() => handleNavigation("home/online")}
+                        >ONLINE</Button>
+                    </li>
+                    <li>
+                        <Button
+                            btn='BUTTON_BLUE'
+                            option={true}
+                            onClick={() => handleNavigation("home/vs_player")}
+                        >VS PLAYER</Button>
+                    </li>
+                    <li>
+                        <Button
+                            btn='BUTTON_BLUE'
+                            option={true}
+                            onClick={() => handleNavigation("home/single_player")}
+                        >CONTRA A MAQUINA</Button>
+                    </li>
                 </ul>
 
             </Styled.Section>

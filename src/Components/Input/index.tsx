@@ -1,6 +1,5 @@
 import * as Styled from "./style";
 
-
 interface IProps {
     type: string;
     placeholder?: string;

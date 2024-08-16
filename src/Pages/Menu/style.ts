@@ -6,6 +6,10 @@ export const Container = styled.div`
 
     margin: 0 auto;
     padding: 0 20px;
+
+    @media (max-width: 450px) {
+        padding: 0 12px 20px 10px;
+    }
 `;
 
 export const Header = styled.header`
@@ -87,6 +91,10 @@ export const Section = styled.section`
     button {
         width: 100%;
         margin-bottom: 15px;
+    }
+
+    @media (max-width: 450px) {
+        padding: 30px 15px 20px 15px;
     }
 
 `

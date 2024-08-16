@@ -2,6 +2,10 @@ import styled from "styled-components";
 
 export const Container = styled.div`
     padding: 0 25px 50px 25px;
+
+    @media (max-width: 450px) {
+        padding: 0 10px 40px 10px;
+    }
 `;
 
 export const PhotoInput = styled.div`
