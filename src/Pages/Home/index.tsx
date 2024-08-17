@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { Link } from 'react-scroll';
 
 import * as Styled from './style';
 import Button from '../../Components/Button';
@@ -16,6 +17,7 @@ import iconXEmptyField from "../../assets/icon-x-outline.svg";
 import iconOEmptyField from "../../assets/icon-o-outline.svg";
 import { IVictory } from "../../Config/interfaces";
 import ModalVictoryMatch from "../../Components/ModalVictoryMatch";
+import Reveal from "../../Components/Reveal";
 
 /*
 
@@ -32,7 +34,11 @@ interface IBoard {
     row_3: ("PLAYER_ONE" | "PLAYER_TWO" | "NO_PLAYER")[];
 }
 
-
+interface ICountMatches {
+    playerOne: number;
+    playerTwo: number;
+    draws: number;
+}
 
 function Home() {
 
@@ -42,7 +48,8 @@ function Home() {
         row_3: ["NO_PLAYER", "NO_PLAYER", "NO_PLAYER"],
     };
 
-    const [playerVictory, setPlayerVictory] = useState<IVictory>({player: "DRAW", open: true});
+    const [scoreboard, setScoreboard] = useState<ICountMatches>({ playerOne: 0, playerTwo: 0, draws: 0 });
+    const [playerVictory, setPlayerVictory] = useState<IVictory>({ player: "DRAW", open: false });
     const [turnPlayer, setTurnPlayer] = useState<boolean>(false);
     const [board, setBoard] = useState<IBoard>(initialBoard);
 
@@ -87,8 +94,8 @@ function Home() {
         setTurnPlayer(!turnPlayer);
     }
 
-    function victoryCondition(player: string) {
-       
+    function victoryCondition(player: "PLAYER_ONE" | "PLAYER_TWO" | "DRAW") {
+
         // verifca linhas
         for (let i = 1; i <= 3; i++) {
             const rowKey = `row_${i}`;
@@ -97,11 +104,9 @@ function Home() {
                 board[rowKey as keyof IBoard][1] === player &&
                 board[rowKey as keyof IBoard][2] === player
             ) {
-                alert(`${player} venceu!`);
-                return true;
+                handleVitctory(player);
             }
         }
-
 
         // Verifica colunas
         for (let j = 0; j < 3; j++) {
@@ -110,8 +115,7 @@ function Home() {
                 board["row_2"][j] === player &&
                 board["row_3"][j] === player
             ) {
-                alert(`${player} venceu!`);
-                return true;
+                handleVitctory(player === "PLAYER_ONE" ? "PLAYER_ONE" : "PLAYER_TWO")
             }
         }
 
@@ -120,124 +124,199 @@ function Home() {
             (board["row_1"][0] === player && board["row_2"][1] === player && board["row_3"][2] === player) ||
             (board["row_1"][2] === player && board["row_2"][1] === player && board["row_3"][0] === player)
         ) {
-            alert(`${player} venceu!`);
-            return true;
+            handleVitctory(player);
         }
-        
+
+        // verifica se dedu velha
+        if (board.row_1.indexOf("NO_PLAYER") < 0 && board.row_2.indexOf("NO_PLAYER") < 0 && board.row_3.indexOf("NO_PLAYER") < 0) {
+            handleVitctory(player);
+        }
+
         return;
     }
 
-    function endOfTheMatch(obj: IVictory) {
-
+    function nextMatch() {
+        setPlayerVictory({ open: false, player: "DRAW" });
+        setBoard(initialBoard);
     }
 
+    function handleVitctory(player: "PLAYER_ONE" | "PLAYER_TWO" | "DRAW") {
+
+        let finallyMatch = scoreboard;
+        const result = player === "PLAYER_ONE" ?
+            "PLAYER_ONE" :
+            player === "PLAYER_TWO" ?
+                "PLAYER_TWO" :
+                "DRAW";
+
+        switch (player) {
+            case "PLAYER_ONE": {
+                finallyMatch.playerOne++;
+                break;
+            }
+
+            case "PLAYER_TWO": {
+                finallyMatch.playerTwo++;
+                break;
+            }
+
+            default: {
+                finallyMatch.draws++;
+                break;
+            }
+        }
+
+
+        setScoreboard(finallyMatch);
+        setPlayerVictory({ open: true, player: result });
+        return true;
+    }
+
+    function realodMatch() {
+        setBoard(initialBoard);
+    }
 
     return (
         <Styled.Container>
 
             {playerVictory.open && (
                 <>
-                    <ModalVictoryMatch victory={playerVictory} />
+                    <ModalVictoryMatch victory={playerVictory} close={nextMatch} />
                 </>
             )}
 
             <Styled.ContainerBoard>
 
                 <Styled.OptionMatch>
-                    <img src={logoImg} alt="icon logo" />
+                    <Link
+                        to="board"
+                        spy={true}
+                        smooth={true}
+                        duration={500}
+                    >
+                        <img src={logoImg} alt="icon logo" />
+                    </Link>
 
-                    <div>
-                        <img src={turnPlayer ? IconOTurn : IconXTurn} alt="de quem é o turno" />
-                        VEZ
-                    </div>
+                    <Reveal y={-30} duration={.3} >
 
-                    <Button btn='BUTTON_SILVER' option={false} >
-                        <img src={iconRestart} alt="" />
-                    </Button>
+                        <Link
+                            to="scoreboard"
+                            spy={true}
+                            smooth={true}
+                            duration={500}
+                        >
+
+                            <Styled.Turn>
+                                <img src={turnPlayer ? IconOTurn : IconXTurn} alt="de quem é o turno" />
+                                VEZ
+                            </Styled.Turn>
+                        </Link>
+                    </Reveal>
+
+
+                    <Link
+                        to="board"
+                        spy={true}
+                        smooth={true}
+                        duration={500}
+                    >
+                        <Button btn='BUTTON_SILVER' option={false} onClick={realodMatch} >
+
+                            <img src={iconRestart} alt="" />
+
+                        </Button>
+
+                    </Link>
                 </Styled.OptionMatch>
 
-                <Styled.Board>
+                <Styled.Board id="board" >
                     <ul>
 
                         {board.row_1.map((field, index) => (
-                            <Styled.Field
-                                player={field === "NO_PLAYER"}
-                                onClick={() => handleMovePlayer("row_1", index)} >
+                            <Reveal y={-20} duration={.3} delay={parseFloat(`.${index + 2}`)} >
+                                <Styled.Field
+                                    player={field === "NO_PLAYER"}
+                                    onClick={() => handleMovePlayer("row_1", index)} >
 
-                                {field === "NO_PLAYER" ? (
-                                    <>
-                                        {turnPlayer ?
-                                            <img src={iconOEmptyField} alt="" /> :
-                                            <img src={iconXEmptyField} alt="" />}
-                                    </>
-                                ) : (
-                                    <>
-                                        {field === "PLAYER_ONE" ?
-                                            <img src={iconO} alt="" /> :
-                                            <img src={iconX} alt="" />}
-                                    </>)}
-                            </Styled.Field>
+                                    {field === "NO_PLAYER" ? (
+                                        <>
+                                            {turnPlayer ?
+                                                <img src={iconOEmptyField} alt="" /> :
+                                                <img src={iconXEmptyField} alt="" />}
+                                        </>
+                                    ) : (
+                                        <>
+                                            {field === "PLAYER_ONE" ?
+                                                <img src={iconO} alt="" /> :
+                                                <img src={iconX} alt="" />}
+                                        </>)}
+                                </Styled.Field>
+                            </Reveal>
                         ))}
 
                         {board.row_2.map((field, index) => (
-                            <Styled.Field
-                                player={field === "NO_PLAYER"}
-                                onClick={() => handleMovePlayer("row_2", index)}
-                            >
-                                {field === "NO_PLAYER" ? (
-                                    <>
-                                        {turnPlayer ?
-                                            <img src={iconOEmptyField} alt="" /> :
-                                            <img src={iconXEmptyField} alt="" />}
-                                    </>
-                                ) : (
-                                    <>
-                                        {field === "PLAYER_ONE" ?
-                                            <img src={iconO} alt="" /> :
-                                            <img src={iconX} alt="" />}
-                                    </>)}
-                            </Styled.Field>
+                            <Reveal y={-25} duration={.3} delay={parseFloat(`.${index + 4}`)} >
+                                <Styled.Field
+                                    player={field === "NO_PLAYER"}
+                                    onClick={() => handleMovePlayer("row_2", index)}
+                                >
+                                    {field === "NO_PLAYER" ? (
+                                        <>
+                                            {turnPlayer ?
+                                                <img src={iconOEmptyField} alt="" /> :
+                                                <img src={iconXEmptyField} alt="" />}
+                                        </>
+                                    ) : (
+                                        <>
+                                            {field === "PLAYER_ONE" ?
+                                                <img src={iconO} alt="" /> :
+                                                <img src={iconX} alt="" />}
+                                        </>)}
+                                </Styled.Field>
+                            </Reveal>
                         ))}
 
                         {board.row_3.map((field, index) => (
-                            <Styled.Field
-                                player={field === "NO_PLAYER"}
-                                onClick={() => handleMovePlayer("row_3", index)}
-                            >
+                            <Reveal y={-30} duration={.3} delay={parseFloat(`.${index + 5}`)} >
+                                <Styled.Field
+                                    player={field === "NO_PLAYER"}
+                                    onClick={() => handleMovePlayer("row_3", index)}
+                                >
 
-                                {field === "NO_PLAYER" ? (
-                                    <>
-                                        {turnPlayer ?
-                                            <img src={iconOEmptyField} alt="" /> :
-                                            <img src={iconXEmptyField} alt="" />}
-                                    </>
-                                ) : (
-                                    <>
-                                        {field === "PLAYER_ONE" ?
-                                            <img src={iconO} alt="" /> :
-                                            <img src={iconX} alt="" />}
-                                    </>)}
-                            </Styled.Field>
+                                    {field === "NO_PLAYER" ? (
+                                        <>
+                                            {turnPlayer ?
+                                                <img src={iconOEmptyField} alt="" /> :
+                                                <img src={iconXEmptyField} alt="" />}
+                                        </>
+                                    ) : (
+                                        <>
+                                            {field === "PLAYER_ONE" ?
+                                                <img src={iconO} alt="" /> :
+                                                <img src={iconX} alt="" />}
+                                        </>)}
+                                </Styled.Field>
+                            </Reveal>
                         ))}
 
                     </ul>
                 </Styled.Board>
 
-                <Styled.Scoreboard>
+                <Styled.Scoreboard id="scoreboard" >
 
                     <Button btn="BUTTON_BLUE" option={false} borderBottom={false} hoverStyle={false} >
                         X (P2)
-                        <strong> 14 </strong>
+                        <strong> {scoreboard.playerTwo} </strong>
                     </Button>
 
                     <Button btn="BUTTON_SILVER" option={false} borderBottom={false} hoverStyle={false} >
                         VELHAS
-                        <strong> 31 </strong>
+                        <strong> {scoreboard.draws} </strong>
                     </Button>
 
                     <Button btn="BUTTON_YALLOW" option={false} borderBottom={false} hoverStyle={false} >
                         O (P1)
-                        <strong> 11 </strong>
+                        <strong> {scoreboard.playerOne} </strong>
                     </Button>
 
                 </Styled.Scoreboard>

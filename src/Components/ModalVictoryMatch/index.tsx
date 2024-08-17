@@ -4,46 +4,65 @@ import iconO from '../../assets/icon-o.svg';
 import iconX from '../../assets/icon-x.svg';
 import Button from '../Button';
 import { IVictory } from '../../Config/interfaces';
+import { useNavigate } from 'react-router-dom';
+import Reveal from '../Reveal';
 
 interface IProps {
-    victory: IVictory
+    victory: IVictory;
+    close: () => void;
 }
 
-function ModalVictoryMatch({ victory }: IProps) {
+function ModalVictoryMatch({ victory, close }: IProps) {
 
+    const navigate = useNavigate();
+
+    function handleQuit() {
+        navigate("/", { replace: true });
+    }
 
     return (
-        <Styled.Container victory={victory.player}>
-            <section>
-                <article>
-                    {victory.player !== "DRAW" && (
-                        <>
-                            <span>PLAYER {victory.player === "PLAYER_ONE" ? "1" : "2"} GANHOU</span>
-                        </>
-                    )}
-    
-                    <div>
-                        {victory.player === "DRAW" ? (
+        <Styled.Container>
+            <Reveal y={-30} duration={.3} >
+                <Styled.ContainerContent victory={victory.player} >
+                    <article>
+                        {victory.player !== "DRAW" && (
                             <>
-                                <strong>DEU VELHA</strong>
-                            </>
-                        ) : (
-                            <>
-                                <img src={victory.player === "PLAYER_ONE" ? iconO : iconX} alt="icon do vencedor" />
-                                <strong>LEVA A RODADA</strong>
+                                <span>PLAYER {victory.player === "PLAYER_ONE" ? "1" : "2"} GANHOU</span>
                             </>
                         )}
-                    </div>
-    
-                    <div>
-                        <Button btn='BUTTON_SILVER' option={false}>VOLTAR</Button>
-                        <Button btn={'BUTTON_YALLOW'} option={false}>PRÓXIMO ROUND</Button>
-                    </div>
-                </article>
-            </section>
+
+                        <div>
+                            {victory.player === "DRAW" ? (
+                                <>
+                                    <strong>DEU VELHA</strong>
+                                </>
+                            ) : (
+                                <>
+                                    <img src={victory.player === "PLAYER_ONE" ? iconO : iconX} alt="icon do vencedor" />
+                                    <strong>LEVA A RODADA</strong>
+                                </>
+                            )}
+                        </div>
+
+                        <div>
+                            <Button
+                                btn='BUTTON_SILVER'
+                                option={false}
+                                onClick={handleQuit}
+                            >VOLTAR</Button>
+
+                            <Button
+                                btn={'BUTTON_YALLOW'}
+                                option={false}
+                                onClick={close}
+                            >PRÓXIMO ROUND</Button>
+                        </div>
+                    </article>
+                </Styled.ContainerContent>
+            </Reveal>
         </Styled.Container>
     )
-    
+
 }
 
 export default ModalVictoryMatch;

@@ -4,7 +4,7 @@ interface IProps {
     victory: "PLAYER_ONE" | "PLAYER_TWO" | "DRAW";
 }
 
-export const Container = styled.div<IProps>`
+export const Container = styled.div`
 
     position: fixed;
     top: 0;
@@ -23,17 +23,23 @@ export const Container = styled.div<IProps>`
 
     background-color: rgba(0, 0, 0, .4);
 
-
-    section {
-        
+    div:nth-child(1) {
         width: 100%;
-
-        padding: 24px 20px;
-
-        text-align: center;
-
-        background-color: var(--semiDarkNavy);
     }
+
+
+
+`;
+
+export const ContainerContent = styled.section<IProps>`
+    
+    width: 100%;
+    padding: 24px 20px;
+
+    text-align: center;
+
+    background-color: var(--semiDarkNavy);
+
 
     article, div {
         display: flex;
@@ -49,11 +55,9 @@ export const Container = styled.div<IProps>`
 
         width: fit-content;
         margin: 0 auto;
-
     }
 
     span {
-
         font-size: 10px;
         font-weight: 700;
         color: var(--silver);
@@ -78,7 +82,7 @@ export const Container = styled.div<IProps>`
                 font-weight: 700;
 
                 ${props => props.victory === "DRAW" ?
-                css`
+        css`
                     color: var(--silver);
                 ` : css`
                     color: var(${props.victory === "PLAYER_ONE" ? "--lightYallow" : "--lightBlue"});
@@ -104,5 +108,4 @@ export const Container = styled.div<IProps>`
             margin-right: 16px;
         }
     } 
-
 `;

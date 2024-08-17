@@ -31,40 +31,9 @@ export const OptionMatch = styled.article`
 
     img {
         height: 25px;
+        cursor: pointer;
     }
 
-    div {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        
-        padding: 10px 21px;
-
-        border-radius: 10px;
-        border-bottom: 3px solid #10212a;
-
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--silver);
-
-        background-color: var(--semiDarkNavy);
-
-        cursor: default;
-
-        img {
-            height: 15px;
-            margin-right: 10px;
-
-            transition: scale .4s ease;
-        }
-
-        &:hover {
-            img {
-                scale: 1.2;
-            }
-        }
-
-    }
 
     button {
         display: flex;
@@ -92,6 +61,41 @@ export const OptionMatch = styled.article`
     
 `;
 
+export const Turn = styled.div`
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    padding: 10px 21px;
+
+    border-radius: 10px;
+    border-bottom: 3px solid #10212a;
+
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--silver);
+
+    background-color: var(--semiDarkNavy);
+
+    cursor: pointer;
+
+    img {
+        height: 15px;
+        margin-right: 10px;
+
+        transition: scale .4s ease;
+    }
+
+    &:hover {
+        img {
+            scale: 1.2;
+        }
+    }
+
+    
+`;
+
 export const Board = styled.article`
     width: 100%;
     margin: 0 auto;
@@ -104,8 +108,12 @@ export const Board = styled.article`
 
         width: 100%;
     }
-
-   
+    
+    @media (max-width: 400px) {
+        ul {
+            grid-gap: 14px;
+        }
+    }
 
 `;
 
@@ -146,6 +154,10 @@ export const Field = styled.li<IField>`
         width: 50%;
         height: fit-content;
 
+    }
+
+    @media (max-width: 400px) {
+        border-radius: 10px;
     }
 `;
 
