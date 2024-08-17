@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components";
 
 interface IField {
-    player?: string;
+    player?: boolean;
 }
 
 export const Container = styled.div`
@@ -123,7 +123,7 @@ export const Field = styled.li<IField>`
 
     background-color: var(--semiDarkNavy);
 
-    ${props => props.player === "no_player" ? css`
+    ${props => props.player ? css`
         cursor: pointer;
 
         img {
@@ -172,6 +172,8 @@ export const Scoreboard = styled.section`
 
         font-size: 12px;
         font-weight: 400;
+
+        cursor: default;
 
         &:hover {
 
