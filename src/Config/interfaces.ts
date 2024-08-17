@@ -27,3 +27,8 @@ export interface IOptionMatch {
     match: "vs_player" | "single_player" | "online",
 
 }
+
+export interface IVictory {
+    player: "PLAYER_ONE" | "PLAYER_TWO" | "DRAW";
+    open: boolean;
+}

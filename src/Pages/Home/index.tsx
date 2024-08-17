@@ -14,6 +14,8 @@ import iconO from "../../assets/icon-o.svg";
 
 import iconXEmptyField from "../../assets/icon-x-outline.svg";
 import iconOEmptyField from "../../assets/icon-o-outline.svg";
+import { IVictory } from "../../Config/interfaces";
+import ModalVictoryMatch from "../../Components/ModalVictoryMatch";
 
 /*
 
@@ -24,13 +26,12 @@ match:
 
 */
 
-
-
 interface IBoard {
     row_1: ("PLAYER_ONE" | "PLAYER_TWO" | "NO_PLAYER")[];
     row_2: ("PLAYER_ONE" | "PLAYER_TWO" | "NO_PLAYER")[];
     row_3: ("PLAYER_ONE" | "PLAYER_TWO" | "NO_PLAYER")[];
 }
+
 
 
 function Home() {
@@ -41,7 +42,7 @@ function Home() {
         row_3: ["NO_PLAYER", "NO_PLAYER", "NO_PLAYER"],
     };
 
-    const [playerVictory, setPlayerVictory] = useState();
+    const [playerVictory, setPlayerVictory] = useState<IVictory>({player: "DRAW", open: true});
     const [turnPlayer, setTurnPlayer] = useState<boolean>(false);
     const [board, setBoard] = useState<IBoard>(initialBoard);
 
@@ -126,9 +127,19 @@ function Home() {
         return;
     }
 
+    function endOfTheMatch(obj: IVictory) {
+
+    }
+
 
     return (
         <Styled.Container>
+
+            {playerVictory.open && (
+                <>
+                    <ModalVictoryMatch victory={playerVictory} />
+                </>
+            )}
 
             <Styled.ContainerBoard>
 
