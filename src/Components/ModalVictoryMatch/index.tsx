@@ -31,7 +31,7 @@ function ModalVictoryMatch({ victory, close }: IProps) {
                             </>
                         )}
 
-                        <div>
+                        <Styled.Title>
                             {victory.player === "DRAW" ? (
                                 <>
                                     <strong>DEU VELHA</strong>
@@ -42,7 +42,7 @@ function ModalVictoryMatch({ victory, close }: IProps) {
                                     <strong>LEVA A RODADA</strong>
                                 </>
                             )}
-                        </div>
+                        </Styled.Title>
 
                         <div>
                             <Button

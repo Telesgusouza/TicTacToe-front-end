@@ -26,9 +26,6 @@ export const Container = styled.div`
     div:nth-child(1) {
         width: 100%;
     }
-
-
-
 `;
 
 export const ContainerContent = styled.section<IProps>`
@@ -68,13 +65,13 @@ export const ContainerContent = styled.section<IProps>`
         flex-direction: row;
         
         &:nth-child(2) {
-            margin-top: 16px;
-            margin: 16px 0 24px 0;
+
         }
 
         &:nth-child(3) {
             display: flex;
             flex-direction: row;
+
         }
 
         strong {
@@ -92,10 +89,6 @@ export const ContainerContent = styled.section<IProps>`
             }
     }
 
-    img {
-        width: 50px;
-        margin-right: 24px;
-    }
 
     button {
         width: fit-content;
@@ -108,4 +101,27 @@ export const ContainerContent = styled.section<IProps>`
             margin-right: 16px;
         }
     } 
+`;
+
+export const Title = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: fit-content;
+
+    margin-top: 16px;
+    margin: 16px 0 24px 0;
+
+    img {
+        width: 50px;
+        margin-right: 24px;
+    }
+
+    @media (max-width: 340px) {
+        img {
+            width: 45px;
+            margin-right: 8px;
+        }
+    }
 `;

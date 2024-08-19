@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Link } from 'react-scroll';
 
@@ -54,44 +54,20 @@ function Home() {
     const [board, setBoard] = useState<IBoard>(initialBoard);
 
     const { match } = useParams();
+    const navigate = useNavigate();
 
     useEffect(() => {
         localStorage.getItem("user");
     }, []);
 
-    function handleMovePlayer(row: "row_1" | "row_2" | "row_3", index: number) {
-
-        switch (row) {
-            case "row_1": {
-                if (board.row_1[index] !== "NO_PLAYER") return;
-
-                board.row_1[index] = turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO";
-                break;
-            }
-
-            case "row_2": {
-                if (board.row_2[index] !== "NO_PLAYER") return;
-
-                board.row_2[index] = turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO";
-                break;
-            }
-
-            case "row_3": {
-                if (board.row_3[index] !== "NO_PLAYER") return;
-
-                board.row_3[index] = turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO";
-                break;
-            }
-
-            default: {
-                console.error("Invalid field");
-                break;
-            }
+    async function handleMovePlayer(row: "row_1" | "row_2" | "row_3", index: number) {
+        if (match === "vs_player") {
+            move(row, index);
+        } else if (match === "single_player" && !turnPlayer) {
+            await move(row, index);
+            machineMove();
         }
 
-        setBoard(board);
-        victoryCondition(turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO");
-        setTurnPlayer(!turnPlayer);
     }
 
     function victoryCondition(player: "PLAYER_ONE" | "PLAYER_TWO" | "DRAW") {
@@ -125,19 +101,16 @@ function Home() {
             (board["row_1"][2] === player && board["row_2"][1] === player && board["row_3"][0] === player)
         ) {
             handleVitctory(player);
+
         }
 
         // verifica se dedu velha
-        if (board.row_1.indexOf("NO_PLAYER") < 0 && board.row_2.indexOf("NO_PLAYER") < 0 && board.row_3.indexOf("NO_PLAYER") < 0) {
-            handleVitctory(player);
+        else if (board.row_1.indexOf("NO_PLAYER") < 0 && board.row_2.indexOf("NO_PLAYER") < 0 && board.row_3.indexOf("NO_PLAYER") < 0) {
+
+            handleVitctory("DRAW");
         }
 
         return;
-    }
-
-    function nextMatch() {
-        setPlayerVictory({ open: false, player: "DRAW" });
-        setBoard(initialBoard);
     }
 
     function handleVitctory(player: "PLAYER_ONE" | "PLAYER_TWO" | "DRAW") {
@@ -166,13 +139,93 @@ function Home() {
             }
         }
 
-
         setScoreboard(finallyMatch);
         setPlayerVictory({ open: true, player: result });
-        return true;
+
     }
 
+    /* 
+    
+    movimentos dos jogadores
+    
+    */
+
+
+    function move(row: "row_1" | "row_2" | "row_3", index: number) {
+        switch (row) {
+            case "row_1": {
+                if (board.row_1[index] !== "NO_PLAYER") return;
+
+                board.row_1[index] = turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO";
+                break;
+            }
+
+            case "row_2": {
+                if (board.row_2[index] !== "NO_PLAYER") return;
+
+                board.row_2[index] = turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO";
+                break;
+            }
+
+            case "row_3": {
+                if (board.row_3[index] !== "NO_PLAYER") return;
+
+                board.row_3[index] = turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO";
+                break;
+            }
+
+            default: {
+                console.error("Invalid field");
+                break;
+            }
+        }
+
+        setBoard(board);
+        victoryCondition(turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO");
+        setTurnPlayer(!turnPlayer);
+    }
+
+    async function machineMove() {
+        // Lista para armazenar os índices dos campos "NO_PLAYER"
+        let availableFields = [];
+    
+        for (let row = 1; row <= 3; row++) {
+            for (let col = 0; col < 3; col++) {
+
+                const field = board[`row_${row}` as keyof IBoard][col];
+                if (field === "NO_PLAYER") {
+                    availableFields.push({ row, col });
+                }
+            }
+        }
+    
+        if (availableFields.length > 0) {
+            const randomIndex = Math.floor(Math.random() * availableFields.length);
+            const { row, col } = availableFields[randomIndex];
+    
+            setTimeout(() => {
+                board[`row_${row}` as keyof IBoard][col] = "PLAYER_ONE";    
+                setBoard(board); 
+                victoryCondition("PLAYER_ONE");
+                setTurnPlayer(false);
+            }, 500);
+            
+        } else {
+            console.log("Não há campos disponíveis.");
+        }
+    }
+    
+    // outras funções 
     function realodMatch() {
+        setBoard(initialBoard);
+    }
+
+    function nextMatch() {
+        if(match === "single_player") {
+            setTurnPlayer(false);
+        }
+
+        setPlayerVictory({ open: false, player: "DRAW" });
         setBoard(initialBoard);
     }
 
@@ -188,14 +241,9 @@ function Home() {
             <Styled.ContainerBoard>
 
                 <Styled.OptionMatch>
-                    <Link
-                        to="board"
-                        spy={true}
-                        smooth={true}
-                        duration={500}
-                    >
-                        <img src={logoImg} alt="icon logo" />
-                    </Link>
+
+                    <img src={logoImg} alt="icon logo" onClick={() => navigate("/", { replace: true })} />
+
 
                     <Reveal y={-30} duration={.3} >
 
@@ -233,7 +281,11 @@ function Home() {
                     <ul>
 
                         {board.row_1.map((field, index) => (
-                            <Reveal y={-20} duration={.3} delay={parseFloat(`.${index + 2}`)} >
+                            <Reveal
+                                key={index + "ro1"}
+                                y={-20}
+                                duration={.3}
+                                delay={parseFloat(`.${index + 2}`)} >
                                 <Styled.Field
                                     player={field === "NO_PLAYER"}
                                     onClick={() => handleMovePlayer("row_1", index)} >
@@ -255,7 +307,12 @@ function Home() {
                         ))}
 
                         {board.row_2.map((field, index) => (
-                            <Reveal y={-25} duration={.3} delay={parseFloat(`.${index + 4}`)} >
+                            <Reveal
+                                key={index + "ro2"}
+                                y={-25}
+                                duration={.3}
+                                delay={parseFloat(`.${index + 4}`)}
+                            >
                                 <Styled.Field
                                     player={field === "NO_PLAYER"}
                                     onClick={() => handleMovePlayer("row_2", index)}
@@ -277,7 +334,12 @@ function Home() {
                         ))}
 
                         {board.row_3.map((field, index) => (
-                            <Reveal y={-30} duration={.3} delay={parseFloat(`.${index + 5}`)} >
+                            <Reveal
+                                key={index + "ro3"}
+                                y={-30}
+                                duration={.3}
+                                delay={parseFloat(`.${index + 5}`)}
+                            >
                                 <Styled.Field
                                     player={field === "NO_PLAYER"}
                                     onClick={() => handleMovePlayer("row_3", index)}
