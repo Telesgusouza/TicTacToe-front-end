@@ -83,7 +83,7 @@ function Menu() {
                             btn='BUTTON_YALLOW'
                             option={true}
                             disabled={!logged}
-                            onClick={() => handleNavigation("home/online")}
+                            onClick={() => handleNavigation("/menu")}
                         >ONLINE</Button>
                     </li>
                     <li>

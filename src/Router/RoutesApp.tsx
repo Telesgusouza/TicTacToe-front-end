@@ -7,6 +7,8 @@ import Login from "../Pages/Login";
 import Register from "../Pages/Register";
 import Menu from "../Pages/Menu";
 import Home from "../Pages/Home";
+import MenuOnline from "../Pages/MenuOnline";
+import InfoUser from "../Pages/InfoUser";
 
 
 function RoutesApp() {
@@ -16,9 +18,14 @@ function RoutesApp() {
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<Menu />} />
+                    
                     <Route path="/register" element={<Register />} />
                     <Route path="/login" element={<Login />} />
+                    
                     <Route path="/home/:match" element={<Home />} />
+                    <Route path="/menu_match_online" element={<MenuOnline />} />
+
+                    <Route path="/info_user" element={<InfoUser />} />
                 </Routes>
             </BrowserRouter>
         </Provider>

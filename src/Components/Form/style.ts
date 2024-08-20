@@ -32,9 +32,7 @@ export const Form = styled.form`
     p {
         text-align: center;
         color: var(--silverHover);
-
-
-
+        
         span {
             color: var(--lightBlueHover);
             cursor: pointer;
