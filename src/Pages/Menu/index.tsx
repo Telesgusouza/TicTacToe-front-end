@@ -4,11 +4,7 @@ import * as Styled from './style';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import baseUrl from '../../Config/baseUrl';
-import { IRootReducer, IUser } from '../../Config/interfaces';
-import { useDispatch, useSelector } from 'react-redux';
-import ActionTypes from '../../Config/ActionTypes';
-
-
+import { IUser } from '../../Config/interfaces';
 
 function Menu() {
 
@@ -37,6 +33,14 @@ function Menu() {
                     const jsonDataUser = JSON.stringify(dataUser);
                     localStorage.setItem("user", jsonDataUser);
 
+                    const photoUser = await axios.get(baseUrl + "/file", {
+                        'headers': {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    const jsonPhotoUser = photoUser ? JSON.stringify(photoUser.data) : null;
+                    if (jsonPhotoUser) localStorage.setItem("photo_user", jsonPhotoUser);
+
                     setLogged(true);
                 } catch (e) {
                     console.error("Error > ", e);
@@ -48,6 +52,10 @@ function Menu() {
     }, [])
 
     function handleNavigation(url: string) {
+
+        console.log("========================");
+        console.log(url === "home/online" && !logged)
+
         if (url === "home/online" && !logged) return;
 
         navigation("/" + url, { replace: true });
@@ -83,7 +91,7 @@ function Menu() {
                             btn='BUTTON_YALLOW'
                             option={true}
                             disabled={!logged}
-                            onClick={() => handleNavigation("/menu")}
+                            onClick={() => handleNavigation("menu_match_online")}
                         >ONLINE</Button>
                     </li>
                     <li>

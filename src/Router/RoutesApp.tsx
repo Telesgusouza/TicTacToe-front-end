@@ -18,10 +18,10 @@ function RoutesApp() {
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<Menu />} />
-                    
+
                     <Route path="/register" element={<Register />} />
                     <Route path="/login" element={<Login />} />
-                    
+
                     <Route path="/home/:match" element={<Home />} />
                     <Route path="/menu_match_online" element={<MenuOnline />} />
 
