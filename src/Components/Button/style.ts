@@ -2,10 +2,10 @@ import styled, { css } from "styled-components";
 
 interface IProps {
     btn: "BUTTON_YALLOW" | "BUTTON_BLUE" | "BUTTON_SILVER";
-    option: boolean;
-    borderBottom: boolean;
+    option: "small" | "large";
+    borderbottom: "" | "no_board";
 
-    hoverStyle: boolean;
+    hoverstyle: "" | "no_hover_style";
 }
 
 export const Button = styled.button<IProps>`
@@ -15,7 +15,7 @@ export const Button = styled.button<IProps>`
     border: none;
     border-radius: 15px;
     border-bottom-style: solid;
-    border-bottom-width: ${props => props.option ? 7 : 4 }px;
+    border-bottom-width: ${props => props.option === "small" ? 7 : 4 }px;
     
     transition: background .14s ease;
     transition: border .14s ease;
@@ -37,7 +37,7 @@ export const Button = styled.button<IProps>`
         background-color: var(--lightBlue);
 
         ${
-            props.hoverStyle && css`
+            props.hoverstyle === "" && css`
                 &:hover {
                     background-color: var(--lightBlueHover);
                     border-bottom-color: var(--lightBlue);
@@ -52,7 +52,7 @@ export const Button = styled.button<IProps>`
         background-color: var(--lightYallow);
 
         ${
-            props.hoverStyle && css`
+            props.hoverstyle === "" && css`
                 &:hover {
                     background-color: var(--lightYallowHover);
                     border-bottom-color: var(--lightYallow);
@@ -67,7 +67,7 @@ export const Button = styled.button<IProps>`
         background-color: var(--silver);
 
         ${
-            props.hoverStyle && css`
+            props.hoverstyle === "" && css`
                 &:hover {
                     background-color: var(--silverHover);
                     border-bottom-color: var(--silver);
@@ -77,7 +77,7 @@ export const Button = styled.button<IProps>`
 
     `}
 
-    ${props => !props.borderBottom && css`
+    ${props => props.borderbottom === "no_board" && css`
         border-bottom-width: 0px;
     `}
 

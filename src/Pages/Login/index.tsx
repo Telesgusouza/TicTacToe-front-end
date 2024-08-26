@@ -96,7 +96,7 @@ function Login() {
                     <img src={seePassword ? imgLockOpen : imgLockClose} alt="icon for password" onClick={() => setSeePassword(!seePassword)} />
                 </Styled.InputPassword>
 
-                <Button btn='BUTTON_SILVER' option={false} >Entrar</Button>
+                <Button btn='BUTTON_SILVER' option={"small"} >Entrar</Button>
 
                 <p>Ainda não tem conta? <span onClick={() => handleNavigate("/register")} >Cadastre-se</span></p>
 

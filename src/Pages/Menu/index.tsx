@@ -89,22 +89,22 @@ function Menu() {
                     <li>
                         <Button
                             btn='BUTTON_YALLOW'
-                            option={true}
-                            disabled={!logged}
+                            option={"large"}
+                            disabled={!logged ? "disabled_button" : ""}
                             onClick={() => handleNavigation("menu_match_online")}
                         >ONLINE</Button>
                     </li>
                     <li>
                         <Button
                             btn='BUTTON_BLUE'
-                            option={true}
+                            option={"large"}
                             onClick={() => handleNavigation("home/vs_player")}
                         >VS PLAYER</Button>
                     </li>
                     <li>
                         <Button
                             btn='BUTTON_BLUE'
-                            option={true}
+                            option={"large"}
                             onClick={() => handleNavigation("home/single_player")}
                         >CONTRA A MAQUINA</Button>
                     </li>

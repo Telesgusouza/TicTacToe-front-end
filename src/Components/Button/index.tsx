@@ -5,13 +5,13 @@ import * as Styled from './style';
 interface IProps {
     children: React.ReactNode;
     btn: "BUTTON_YALLOW" | "BUTTON_BLUE" | "BUTTON_SILVER";
-    option: boolean;
+    option: "small" | "large"; // false === small
 
-    borderBottom?: boolean;
-    disabled?: boolean;
+    borderbottom?: "" | "no_board"; // false === 
+    disabled?: "" | "disabled_button";
     onClick?: () => void;
 
-    hoverStyle?: boolean;
+    hoverstyle?: "" | "no_hover_style";
 }
 
 function Button({
@@ -19,11 +19,11 @@ function Button({
     btn,
     option,
 
-    borderBottom = true,
-    disabled = false,
+    borderbottom = "",
+    disabled = "",
     onClick,
 
-    hoverStyle = true
+    hoverstyle = ""
 }: IProps) {
 
     return (
@@ -31,11 +31,11 @@ function Button({
             btn={btn}
             option={option}
 
-            borderBottom={borderBottom}
-            disabled={disabled}
+            borderbottom={borderbottom}
+            disabled={disabled === "disabled_button"}
             onClick={onClick}
 
-            hoverStyle={hoverStyle}
+            hoverstyle={hoverstyle}
         >
 
             {children}

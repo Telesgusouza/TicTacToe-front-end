@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components";
 
 interface IField {
-    player?: boolean;
+    player?: string;
 }
 
 export const Container = styled.div`
@@ -131,7 +131,7 @@ export const Field = styled.li<IField>`
 
     background-color: var(--semiDarkNavy);
 
-    ${props => props.player ? css`
+    ${props => props.player === "NO_PLAYER" ? css`
         cursor: pointer;
 
         img {

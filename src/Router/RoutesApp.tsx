@@ -23,6 +23,7 @@ function RoutesApp() {
                     <Route path="/login" element={<Login />} />
 
                     <Route path="/home/:match" element={<Home />} />
+                    <Route path="/home/:match/:idMatch" element={<Home />} />
                     <Route path="/menu_match_online" element={<MenuOnline />} />
 
                     <Route path="/info_user" element={<InfoUser />} />

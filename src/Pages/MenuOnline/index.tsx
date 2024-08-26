@@ -10,13 +10,17 @@ import Button from "../../Components/Button";
 import Input from "../../Components/Input";
 import axios from "axios";
 import baseUrl from "../../Config/baseUrl";
+import { useDispatch, useSelector } from "react-redux";
+import ActionTypes from "../../Config/ActionTypes";
 
 function MenuOnline() {
     const [photo, setPhoto] = useState<string | null>(null);
     const [loadingMatch, setLoadingMatch] = useState<boolean>(false);
 
     const navigate = useNavigate();
-    var ws;
+    const dispatch = useDispatch();
+    // const { ws } = useSelector((rootReducer: any) => rootReducer.WSReducer);
+    var ws: WebSocket ;
 
     useEffect(() => {
 
@@ -44,17 +48,19 @@ function MenuOnline() {
 
             if (tokenJson) {
 
-                const token = JSON.parse(tokenJson);
+                // const token = JSON.parse(tokenJson);
 
-                const match = await axios.post(baseUrl + "/match", {}, {
-                    'headers': {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+                // const match = await axios.post(baseUrl + "/match", {}, {
+                //     'headers': {
+                //         'Authorization': `Bearer ${token}`
+                //     }
+                // });
 
-                console.log("========================================");
-                connect(match.data.id);
+                // console.log("========================================");
+                // connect(match.data.id);
                 // await connect("3d1f10bd-e735-46e8-b6e9-53612634553c");
+                navigate("/home/online/3d1f10bd-e735-46e8-b6e9-53612634553c", { replace: true });
+
             }
 
             setLoadingMatch(false);
@@ -63,16 +69,6 @@ function MenuOnline() {
             console.error("Error finding match")
         }
 
-    }
-
-    async function connect(id: string) {
-        if (!ws) {
-            const ticket = (await axios.post(`${baseUrl}/ticket/${id}`)).data.ticket;
-            console.log("=============================")
-            console.log(ticket)
-
-            ws = new WebSocket("ws://localhost:8080/")
-        }
     }
 
     return (
@@ -99,7 +95,7 @@ function MenuOnline() {
             <Styled.ContainerContent disabled={loadingMatch} >
                 <Button
                     btn="BUTTON_YALLOW"
-                    option={false}
+                    option={"small"}
                     onClick={searchForMatch}
                 >
 

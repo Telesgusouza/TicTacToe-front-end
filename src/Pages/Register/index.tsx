@@ -83,7 +83,6 @@ function Register() {
 
         try {
 
-
             if (
                 name.length > 0
                 && emailRegex.test(email)
@@ -184,7 +183,7 @@ function Register() {
 
 
 
-                <Button btn='BUTTON_SILVER' option={false} disabled={btnPress} >Registre-se</Button>
+                <Button btn='BUTTON_SILVER' option={"small"} disabled={btnPress ? "disabled_button" : ""} >Registre-se</Button>
 
                 <p>Já tem conta? <span onClick={() => handleNavigate("/login")} >Faça login</span></p>
 

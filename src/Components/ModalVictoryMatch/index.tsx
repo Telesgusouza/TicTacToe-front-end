@@ -47,13 +47,13 @@ function ModalVictoryMatch({ victory, close }: IProps) {
                         <div>
                             <Button
                                 btn='BUTTON_SILVER'
-                                option={false}
+                                option={"small"}
                                 onClick={handleQuit}
                             >VOLTAR</Button>
 
                             <Button
                                 btn={'BUTTON_YALLOW'}
-                                option={false}
+                                option={"small"}
                                 onClick={close}
                             >PRÓXIMO ROUND</Button>
                         </div>
