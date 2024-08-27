@@ -15,7 +15,7 @@ import iconO from "../../assets/icon-o.svg";
 
 import iconXEmptyField from "../../assets/icon-x-outline.svg";
 import iconOEmptyField from "../../assets/icon-o-outline.svg";
-import { IVictory } from "../../Config/interfaces";
+import { IBoard, ICountMatches, IMatch, IUser, IVictory } from "../../Config/interfaces";
 import ModalVictoryMatch from "../../Components/ModalVictoryMatch";
 import Reveal from "../../Components/Reveal";
 import { useSelector } from "react-redux";
@@ -30,29 +30,6 @@ match:
     singlePlayer
 
 */
-
-interface IMatch {
-    id: string,
-    matchCreationDate: string,
-    idPlayerOne: string,
-    idPlayerTwo: string,
-    numberOfWinsPlayerOne: number,
-    numberOfWinsPlayerTwo: number,
-    numberOfMatches: number
-}
-
-interface IBoard {
-    row_1: ("PLAYER_ONE" | "PLAYER_TWO" | "NO_PLAYER")[];
-    row_2: ("PLAYER_ONE" | "PLAYER_TWO" | "NO_PLAYER")[];
-    row_3: ("PLAYER_ONE" | "PLAYER_TWO" | "NO_PLAYER")[];
-}
-
-interface ICountMatches {
-    playerOne: number;
-    playerTwo: number;
-    draws: number;
-}
-
 function Home() {
 
     const initialBoard: IBoard = {
@@ -67,6 +44,7 @@ function Home() {
     const [board, setBoard] = useState<IBoard>(initialBoard);
 
     // online
+    const [player, setPlayer] = useState<IUser | null>(null);
     const [infoMatch, setInfoMatch] = useState<IMatch | null>(null);
     const [ws, setWs] = useState<WebSocket | null>(null);
     const { match, idMatch } = useParams();
@@ -74,7 +52,20 @@ function Home() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // localStorage.getItem("user");
+
+        function getInfoPlayer() {
+            const jsonUser = localStorage.getItem("user");
+
+            if (jsonUser) {
+                const user: IUser = JSON.parse(jsonUser);
+
+                console.log("=========== user ===========")
+                console.log(user);
+
+                setPlayer(user);
+            }
+
+        }
 
         async function getInfoMatch() {
 
@@ -99,7 +90,12 @@ function Home() {
             }
         }
 
-        getInfoMatch();
+        if (match === "online") {
+
+            getInfoMatch();
+            getInfoPlayer();
+        }
+
 
     }, []);
 
@@ -124,20 +120,13 @@ function Home() {
                         console.log(event.data);
                     }
                     newWs.onmessage = async function (event: any) {
-                        // console.log('Mensagem recebida: ', event.data);
                         if (event.data === 'ping') {
                             newWs.send("pong"); // Responde com outro ping após receber um pong
                         } else {
                             const jsonBoard = await JSON.parse(event.data);
 
-                            console.log("================ fora =================")
-                            console.log(jsonBoard);
-                            console.log(jsonBoard.row_1 && jsonBoard.row_2 && jsonBoard.row_3)
-
                             // Verifica se os dados estão consistentes com o tipo IBoard
                             if (jsonBoard.rows_1 && jsonBoard.rows_2 && jsonBoard.rows_3) {
-
-                                console.log("================ dentro do IF =================")
 
                                 const dataBoard: IBoard = {
                                     row_1: jsonBoard.rows_1,
@@ -164,26 +153,6 @@ function Home() {
         connectionMatch();
 
     }, [])
-
-
-    // // Adicione esta função para validar o formato dos dados
-    // function validateBoard(board: any): board is IBoard {
-    //     return (
-    //         Array.isArray(board.row_1) &&
-    //         Array.isArray(board.row_2) &&
-    //         Array.isArray(board.row_3) &&
-    //         board.row_1.length === 3 &&
-    //         board.row_2.length === 3 &&
-    //         board.row_3.length === 3 
-    //         // &&
-    //         // board.row_1.every((cell: string) => ["NO_PLAYER", "PLAYER_ONE", "PLAYER_TWO"].includes(cell)) &&
-    //         // board.row_2.every((cell: string) => ["NO_PLAYER", "PLAYER_ONE", "PLAYER_TWO"].includes(cell)) &&
-    //         // board.row_3.every((cell: string) => ["NO_PLAYER", "PLAYER_ONE", "PLAYER_TWO"].includes(cell))
-    //     );
-    // }
-
-
-
 
     async function handleMovePlayer(row: "row_1" | "row_2" | "row_3", index: number) {
         if (match === "vs_player") {
@@ -279,6 +248,15 @@ function Home() {
     async function moveOnline(row: "row_1" | "row_2" | "row_3", index: number) {
         if (!infoMatch) return;
 
+        /* 
+            ATENÇÃO DESCOMENTE ESSES IFS
+            
+            eles são nescessarios para bloquear o jogador para que não 
+            jogue na vez do próximo 
+        */
+        // if (player?.player === "PLAYER_ONE" && !turnPlayer) return;
+        // if (player?.player === "PLAYER_TWO" && turnPlayer) return;
+
         switch (row) {
             case "row_1":
                 if (board.row_1[index] !== "NO_PLAYER") return;
@@ -291,13 +269,11 @@ function Home() {
                 break;
         }
 
-        // console.log(parseInt(row));
-
         const data = {
             row: parseInt(row.split("")[row.length - 1]) - 1,
             column: index,
             id: turnPlayer ? infoMatch.idPlayerOne : infoMatch.idPlayerTwo,
-            player: turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO"
+            player: player?.player,
         };
 
         try {
@@ -309,12 +285,6 @@ function Home() {
             console.error("Erro ao enviar dados:", error);
         }
     }
-
-
-    // ws?.send("player turn");
-
-
-
 
     function move(row: "row_1" | "row_2" | "row_3", index: number) {
         switch (row) {

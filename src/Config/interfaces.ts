@@ -17,6 +17,7 @@ export interface IUser {
     name: String;
     login: String;
     role: String;
+    player: string;
 
     numberOfWins: number;
     numberOfDefeats: number;
@@ -31,4 +32,26 @@ export interface IOptionMatch {
 export interface IVictory {
     player: "PLAYER_ONE" | "PLAYER_TWO" | "DRAW";
     open: boolean;
+}
+
+export interface IMatch {
+    id: string,
+    matchCreationDate: string,
+    idPlayerOne: string,
+    idPlayerTwo: string,
+    numberOfWinsPlayerOne: number,
+    numberOfWinsPlayerTwo: number,
+    numberOfMatches: number
+}
+
+export interface IBoard {
+    row_1: ("PLAYER_ONE" | "PLAYER_TWO" | "NO_PLAYER")[];
+    row_2: ("PLAYER_ONE" | "PLAYER_TWO" | "NO_PLAYER")[];
+    row_3: ("PLAYER_ONE" | "PLAYER_TWO" | "NO_PLAYER")[];
+}
+
+export interface ICountMatches {
+    playerOne: number;
+    playerTwo: number;
+    draws: number;
 }

@@ -30,7 +30,19 @@ function Menu() {
                     })
 
                     const dataUser: IUser = requestUser.data;
-                    const jsonDataUser = JSON.stringify(dataUser);
+
+                    const jsonUser: IUser = {
+                        name: dataUser.name,
+                        login: dataUser.login,
+                        role: dataUser.role,
+                        player: dataUser.player,
+
+                        numberOfWins: dataUser.numberOfWins,
+                        numberOfDraws: dataUser.numberOfDraws,
+                        numberOfDefeats: dataUser.numberOfDefeats
+                    }
+
+                    const jsonDataUser = JSON.stringify(jsonUser);
                     localStorage.setItem("user", jsonDataUser);
 
                     const photoUser = await axios.get(baseUrl + "/file", {
@@ -52,9 +64,6 @@ function Menu() {
     }, [])
 
     function handleNavigation(url: string) {
-
-        console.log("========================");
-        console.log(url === "home/online" && !logged)
 
         if (url === "home/online" && !logged) return;
 
