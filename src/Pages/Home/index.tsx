@@ -18,7 +18,6 @@ import iconOEmptyField from "../../assets/icon-o-outline.svg";
 import { IBoard, ICountMatches, IMatch, IUser, IVictory } from "../../Config/interfaces";
 import ModalVictoryMatch from "../../Components/ModalVictoryMatch";
 import Reveal from "../../Components/Reveal";
-import { useSelector } from "react-redux";
 import axios from "axios";
 import baseUrl from "../../Config/baseUrl";
 
@@ -59,8 +58,6 @@ function Home() {
             if (jsonUser) {
                 const user: IUser = JSON.parse(jsonUser);
 
-                console.log("=========== user ===========")
-                console.log(user);
 
                 setPlayer(user);
             }
@@ -101,6 +98,8 @@ function Home() {
 
     useEffect(() => {
 
+        console.log("==============================")
+
         async function connectionMatch() {
 
             if (match === "online" && !ws) {
@@ -123,7 +122,13 @@ function Home() {
                         if (event.data === 'ping') {
                             newWs.send("pong"); // Responde com outro ping após receber um pong
                         } else {
-                            const jsonBoard = await JSON.parse(event.data);
+                            const data = await JSON.parse(event.data);
+                            const jsonBoard = data.board;
+
+                            setTurnPlayer(data.PlayerSTurn)
+
+                            console.log("============================");
+                            console.log(data.PlayerSTurn)
 
                             // Verifica se os dados estão consistentes com o tipo IBoard
                             if (jsonBoard.rows_1 && jsonBoard.rows_2 && jsonBoard.rows_3) {
@@ -134,9 +139,11 @@ function Home() {
                                     row_3: jsonBoard.rows_3
                                 }
 
-                                console.log(dataBoard);
-
+                                // Atualiza o estado do tabuleiro com os dados recebidos
                                 setBoard(dataBoard);
+
+                                // Verifica a condição de vitória após a atualização do tabuleiro
+                                victoryCondition(turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO");
                             }
                         }
                     };
@@ -152,7 +159,7 @@ function Home() {
 
         connectionMatch();
 
-    }, [])
+    }, [ws])
 
     async function handleMovePlayer(row: "row_1" | "row_2" | "row_3", index: number) {
         if (match === "vs_player") {
@@ -278,9 +285,7 @@ function Home() {
 
         try {
             const jsonData = JSON.stringify(data);
-            console.log("Dados enviados:", jsonData);
             ws?.send(jsonData);
-            setTurnPlayer(!turnPlayer);
         } catch (error) {
             console.error("Erro ao enviar dados:", error);
         }
