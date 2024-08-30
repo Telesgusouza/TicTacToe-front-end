@@ -21,14 +21,12 @@ import Reveal from "../../Components/Reveal";
 import axios from "axios";
 import baseUrl from "../../Config/baseUrl";
 
-/*
 
-match:
-    online
-    coopLocal
-    singlePlayer
+interface IStatusOnline {
+    loading: boolean;
+    text: string;
+}
 
-*/
 function Home() {
 
     const initialBoard: IBoard = {
@@ -46,6 +44,8 @@ function Home() {
     const [player, setPlayer] = useState<IUser | null>(null);
     const [infoMatch, setInfoMatch] = useState<IMatch | null>(null);
     const [ws, setWs] = useState<WebSocket | null>(null);
+    const [statusOnlie, setStatusOnlie] = useState<IStatusOnline>({loading: true, text: "Carregando Tabuleiro"});
+
     const { match, idMatch } = useParams();
 
     const navigate = useNavigate();
@@ -57,7 +57,6 @@ function Home() {
 
             if (jsonUser) {
                 const user: IUser = JSON.parse(jsonUser);
-
 
                 setPlayer(user);
             }
@@ -97,8 +96,14 @@ function Home() {
     }, []);
 
     useEffect(() => {
+        return () => {
+            if (ws) {
+                ws.close();
+            }
+        };
+    }, []);
 
-        console.log("==============================")
+    useEffect(() => {
 
         async function connectionMatch() {
 
@@ -108,45 +113,93 @@ function Home() {
 
                     const newWs = new WebSocket("ws://localhost:8080/match?server=" + idMatch + "&ticket=" + ticket);
 
-                    newWs.onopen = function () {
-                        console.log("Conexão estabelecida");
-                        newWs.send("pong");
-                    }
-                    newWs.onclose = function () {
-                        console.log("Conexão encerrada")
+                    newWs.onopen = () => {
+                        console.log('Connected to WebSocket server');
+                        keepAlive(); // Iniciar o sistema de ping-pong aqui
+                        setStatusOnlie({loading: false, text: ""});
+                        
+                        newWs.send("view board");
                     };
-                    newWs.onerror = function (event: any) {
-                        console.log(event.data);
-                    }
+
+                    newWs.onerror = (error) => {
+                        console.error('WebSocket Error:', error);
+                        setStatusOnlie({loading: true, text: "Erro ao carregar tabuleiro, aguarde"});
+                        setTimeout(connectionMatch, 3000); // Tentar reconectar após 3 segundos
+
+                        newWs.send("view board");
+                    };
+
+                    newWs.onclose = () => {
+                        console.log('Disconnected from WebSocket server');
+                        setStatusOnlie({loading: true, text: "Conexão fraca, aguarde"});
+                        setTimeout(connectionMatch, 3000); // Tentar reconectar após 3 segundos
+
+                        newWs.send("view board");
+                    };
+
+                    newWs.onmessage = async function (event: MessageEvent) {
+                        console.log("Received message:", event.data);
+
+                        try {
+                            let data = JSON.parse(event.data);
+
+                            if (typeof data === 'string' && data.toLowerCase() === 'ping') {
+                                // Enviar pong como resposta ao ping
+                                newWs.send('pong');
+                                return;
+                            }
+
+                            if (!data || !data.board || !data.PlayerSTurn) {
+                                console.error("Invalid message structure:", event.data);
+                                return;
+                            }
+
+                            const jsonBoard = data.board;
+                            const boardData: IBoard = {
+                                row_1: jsonBoard.rows_1,
+                                row_2: jsonBoard.rows_2,
+                                row_3: jsonBoard.rows_3
+                            };
+
+                            setBoard(boardData);
+                            setTurnPlayer(data.PlayerSTurn === "PLAYER_ONE");
+
+                            victoryCondition(turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO");
+                        } catch (error) {
+                            console.error("Error parsing message:", error);
+                        }
+                    };
+
+                    /*
                     newWs.onmessage = async function (event: any) {
                         if (event.data === 'ping') {
                             newWs.send("pong"); // Responde com outro ping após receber um pong
                         } else {
                             const data = await JSON.parse(event.data);
                             const jsonBoard = data.board;
-
+    
                             setTurnPlayer(data.PlayerSTurn)
-
+    
                             console.log("============================");
                             console.log(data.PlayerSTurn)
-
+    
                             // Verifica se os dados estão consistentes com o tipo IBoard
                             if (jsonBoard.rows_1 && jsonBoard.rows_2 && jsonBoard.rows_3) {
-
+    
                                 const dataBoard: IBoard = {
                                     row_1: jsonBoard.rows_1,
                                     row_2: jsonBoard.rows_2,
                                     row_3: jsonBoard.rows_3
                                 }
-
+    
                                 // Atualiza o estado do tabuleiro com os dados recebidos
                                 setBoard(dataBoard);
-
+    
                                 // Verifica a condição de vitória após a atualização do tabuleiro
                                 victoryCondition(turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO");
                             }
                         }
-                    };
+                    };*/
 
                     setWs(newWs);
 
@@ -154,12 +207,114 @@ function Home() {
                     console.error("Erro ao conectar no servidor, ", e)
                 }
 
+            } else if(ws) {
+
+                 //////////////
+                 ws.onmessage = async function (event: MessageEvent) {
+                    console.log("Received message:", event.data);
+
+                    try {
+                        let data = JSON.parse(event.data);
+
+                        if (typeof data === 'string' && data.toLowerCase() === 'ping') {
+                            // Enviar pong como resposta ao ping
+                            ws.send('pong');
+                            return;
+                        }
+
+                        if (!data || !data.board || !data.PlayerSTurn) {
+                            console.error("Invalid message structure:", event.data);
+                            return;
+                        }
+
+                        const jsonBoard = data.board;
+                        const boardData: IBoard = {
+                            row_1: jsonBoard.rows_1,
+                            row_2: jsonBoard.rows_2,
+                            row_3: jsonBoard.rows_3
+                        };
+
+                        setBoard(boardData);
+                        setTurnPlayer(data.PlayerSTurn === "PLAYER_ONE");
+
+                        victoryCondition(turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO");
+                    } catch (error) {
+                        console.error("Error parsing message:", error);
+                    }
+                };
+
+
             }
         }
 
+        // Adicione esta função logo após conectar o WebSocket
+        function keepAlive() {
+            if (ws) {
+                ws.send('ping');
+                setTimeout(keepAlive, 30000); // Enviar ping a cada 30 segundos
+            }
+        }
+
+        keepAlive();
         connectionMatch();
 
-    }, [ws])
+    }, [])
+
+
+
+    function updateBoard() {
+        if (ws) {
+            ws.onmessage = async function (event: any) {
+                console.log("Received message:", event.data);
+
+                try {
+                    const data = JSON.parse(event.data);
+
+                    if (data.PlayerSTurn === turnPlayer) {
+                        console.log("It's my turn:", data.PlayerSTurn);
+
+                        // Atualize o estado local do tabuleiro
+                        const jsonBoard = data.board;
+                        const dataBoard: IBoard = {
+                            row_1: jsonBoard.rows_1,
+                            row_2: jsonBoard.rows_2,
+                            row_3: jsonBoard.rows_3
+                        };
+
+                        setBoard(dataBoard);
+                        victoryCondition(turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO");
+                    } else {
+                        console.log("Not my turn:", data.PlayerSTurn);
+
+                        // Atualize o estado local do tabuleiro
+                        const jsonBoard = data.board;
+                        const dataBoard: IBoard = {
+                            row_1: jsonBoard.rows_1,
+                            row_2: jsonBoard.rows_2,
+                            row_3: jsonBoard.rows_3
+                        };
+
+                        setBoard(dataBoard);
+                        victoryCondition(turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO");
+                    }
+
+                    setTurnPlayer(!turnPlayer);
+                } catch (error) {
+                    console.error("Error parsing message:", error);
+                }
+            };
+        }
+    }
+
+
+
+
+
+
+
+
+
+
 
     async function handleMovePlayer(row: "row_1" | "row_2" | "row_3", index: number) {
         if (match === "vs_player") {
@@ -167,7 +322,7 @@ function Home() {
         } else if (match === "single_player" && !turnPlayer) {
             await move(row, index);
             machineMove();
-        } else if (match === "online") {
+        } else if (match === "online" && !statusOnlie.loading) {
             moveOnline(row, index);
         }
 
@@ -378,6 +533,11 @@ function Home() {
                     <ModalVictoryMatch victory={playerVictory} close={nextMatch} />
                 </>
             )}
+
+            {statusOnlie.loading && match === "online" && (
+            <>
+                <h1>{statusOnlie.text}...</h1>
+            </>)}
 
             <Styled.ContainerBoard>
 
