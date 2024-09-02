@@ -21,7 +21,6 @@ import Reveal from "../../Components/Reveal";
 import axios from "axios";
 import baseUrl from "../../Config/baseUrl";
 
-
 interface IStatusOnline {
     loading: boolean;
     text: string;
@@ -44,7 +43,8 @@ function Home() {
     const [player, setPlayer] = useState<IUser | null>(null);
     const [infoMatch, setInfoMatch] = useState<IMatch | null>(null);
     const [ws, setWs] = useState<WebSocket | null>(null);
-    const [statusOnlie, setStatusOnlie] = useState<IStatusOnline>({loading: true, text: "Carregando Tabuleiro"});
+    const [statusOnlie, setStatusOnlie] = useState<IStatusOnline>({ loading: true, text: "Carregando Tabuleiro" });
+    const [pauseMatch, setPauseMatch] = useState<boolean>(false);
 
     const { match, idMatch } = useParams();
 
@@ -60,7 +60,6 @@ function Home() {
 
                 setPlayer(user);
             }
-
         }
 
         async function getInfoMatch() {
@@ -78,6 +77,12 @@ function Home() {
                         }
                     });
 
+                    setScoreboard({
+                        playerOne: getMatch.data.numberOfWinsPlayerOne,
+                        playerTwo: getMatch.data.numberOfWinsPlayerTwo,
+                        draws: getMatch.data.numberOfDraws
+                    });
+
                     setInfoMatch(getMatch.data);
                 }
 
@@ -87,7 +92,7 @@ function Home() {
         }
 
         if (match === "online") {
-
+            setPauseMatch(true);
             getInfoMatch();
             getInfoPlayer();
         }
@@ -116,14 +121,14 @@ function Home() {
                     newWs.onopen = () => {
                         console.log('Connected to WebSocket server');
                         keepAlive(); // Iniciar o sistema de ping-pong aqui
-                        setStatusOnlie({loading: false, text: ""});
-                        
+                        setStatusOnlie({ loading: false, text: "" });
+
                         newWs.send("view board");
                     };
 
                     newWs.onerror = (error) => {
                         console.error('WebSocket Error:', error);
-                        setStatusOnlie({loading: true, text: "Erro ao carregar tabuleiro, aguarde"});
+                        setStatusOnlie({ loading: true, text: "Erro ao carregar tabuleiro, aguarde" });
                         setTimeout(connectionMatch, 3000); // Tentar reconectar após 3 segundos
 
                         newWs.send("view board");
@@ -131,16 +136,16 @@ function Home() {
 
                     newWs.onclose = () => {
                         console.log('Disconnected from WebSocket server');
-                        setStatusOnlie({loading: true, text: "Conexão fraca, aguarde"});
+                        setStatusOnlie({ loading: true, text: "Conexão fraca, aguarde" });
                         setTimeout(connectionMatch, 3000); // Tentar reconectar após 3 segundos
 
                         newWs.send("view board");
                     };
 
                     newWs.onmessage = async function (event: MessageEvent) {
-                        console.log("Received message:", event.data);
 
                         try {
+
                             let data = JSON.parse(event.data);
 
                             if (typeof data === 'string' && data.toLowerCase() === 'ping') {
@@ -164,42 +169,13 @@ function Home() {
                             setBoard(boardData);
                             setTurnPlayer(data.PlayerSTurn === "PLAYER_ONE");
 
-                            victoryCondition(turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO");
+                            // victoryCondition(turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO", boardData);
+                            victoryCondition((data.PlayerSTurn !== "PLAYER_ONE") ? "PLAYER_ONE" : "PLAYER_TWO", boardData);
+
                         } catch (error) {
                             console.error("Error parsing message:", error);
                         }
                     };
-
-                    /*
-                    newWs.onmessage = async function (event: any) {
-                        if (event.data === 'ping') {
-                            newWs.send("pong"); // Responde com outro ping após receber um pong
-                        } else {
-                            const data = await JSON.parse(event.data);
-                            const jsonBoard = data.board;
-    
-                            setTurnPlayer(data.PlayerSTurn)
-    
-                            console.log("============================");
-                            console.log(data.PlayerSTurn)
-    
-                            // Verifica se os dados estão consistentes com o tipo IBoard
-                            if (jsonBoard.rows_1 && jsonBoard.rows_2 && jsonBoard.rows_3) {
-    
-                                const dataBoard: IBoard = {
-                                    row_1: jsonBoard.rows_1,
-                                    row_2: jsonBoard.rows_2,
-                                    row_3: jsonBoard.rows_3
-                                }
-    
-                                // Atualiza o estado do tabuleiro com os dados recebidos
-                                setBoard(dataBoard);
-    
-                                // Verifica a condição de vitória após a atualização do tabuleiro
-                                victoryCondition(turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO");
-                            }
-                        }
-                    };*/
 
                     setWs(newWs);
 
@@ -207,11 +183,9 @@ function Home() {
                     console.error("Erro ao conectar no servidor, ", e)
                 }
 
-            } else if(ws) {
+            } else if (ws) {
 
-                 //////////////
-                 ws.onmessage = async function (event: MessageEvent) {
-                    console.log("Received message:", event.data);
+                ws.onmessage = async function (event: MessageEvent) {
 
                     try {
                         let data = JSON.parse(event.data);
@@ -237,7 +211,8 @@ function Home() {
                         setBoard(boardData);
                         setTurnPlayer(data.PlayerSTurn === "PLAYER_ONE");
 
-                        victoryCondition(turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO");
+                        victoryCondition((data.PlayerSTurn !== "PLAYER_ONE") ? "PLAYER_ONE" : "PLAYER_TWO", boardData);
+
                     } catch (error) {
                         console.error("Error parsing message:", error);
                     }
@@ -247,74 +222,31 @@ function Home() {
             }
         }
 
-        // Adicione esta função logo após conectar o WebSocket
         function keepAlive() {
             if (ws) {
                 ws.send('ping');
-                setTimeout(keepAlive, 30000); // Enviar ping a cada 30 segundos
+                setTimeout(keepAlive, 3000); // Enviar ping a cada 30 segundos
             }
         }
 
         keepAlive();
         connectionMatch();
 
-    }, [])
+    }, []);
 
-
-
-    function updateBoard() {
-        if (ws) {
-            ws.onmessage = async function (event: any) {
-                console.log("Received message:", event.data);
-
-                try {
-                    const data = JSON.parse(event.data);
-
-                    if (data.PlayerSTurn === turnPlayer) {
-                        console.log("It's my turn:", data.PlayerSTurn);
-
-                        // Atualize o estado local do tabuleiro
-                        const jsonBoard = data.board;
-                        const dataBoard: IBoard = {
-                            row_1: jsonBoard.rows_1,
-                            row_2: jsonBoard.rows_2,
-                            row_3: jsonBoard.rows_3
-                        };
-
-                        setBoard(dataBoard);
-                        victoryCondition(turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO");
-                    } else {
-                        console.log("Not my turn:", data.PlayerSTurn);
-
-                        // Atualize o estado local do tabuleiro
-                        const jsonBoard = data.board;
-                        const dataBoard: IBoard = {
-                            row_1: jsonBoard.rows_1,
-                            row_2: jsonBoard.rows_2,
-                            row_3: jsonBoard.rows_3
-                        };
-
-                        setBoard(dataBoard);
-                        victoryCondition(turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO");
-                    }
-
-                    setTurnPlayer(!turnPlayer);
-                } catch (error) {
-                    console.error("Error parsing message:", error);
-                }
+    useEffect(() => {
+        if (match === "online" && pauseMatch) {
+            const getBoard = () => {
+                console.log("Atualizando board...");
+                ws?.send("view board");
             };
+
+            const intervalId = setInterval(getBoard, 6000);
+
+            // Limpeza para evitar vazamentos de memória
+            return () => clearInterval(intervalId);
         }
-    }
-
-
-
-
-
-
-
-
-
-
+    })
 
     async function handleMovePlayer(row: "row_1" | "row_2" | "row_3", index: number) {
         if (match === "vs_player") {
@@ -328,15 +260,17 @@ function Home() {
 
     }
 
-    function victoryCondition(player: "PLAYER_ONE" | "PLAYER_TWO" | "DRAW") {
+    function victoryCondition(player: "PLAYER_ONE" | "PLAYER_TWO" | "DRAW", currentBoard?: IBoard) {
+
+        currentBoard = currentBoard ? currentBoard : board;
 
         // verifca linhas
         for (let i = 1; i <= 3; i++) {
             const rowKey = `row_${i}`;
             if (
-                board[rowKey as keyof IBoard][0] === player &&
-                board[rowKey as keyof IBoard][1] === player &&
-                board[rowKey as keyof IBoard][2] === player
+                currentBoard[rowKey as keyof IBoard][0] === player &&
+                currentBoard[rowKey as keyof IBoard][1] === player &&
+                currentBoard[rowKey as keyof IBoard][2] === player
             ) {
                 handleVitctory(player);
             }
@@ -345,9 +279,9 @@ function Home() {
         // Verifica colunas
         for (let j = 0; j < 3; j++) {
             if (
-                board["row_1"][j] === player &&
-                board["row_2"][j] === player &&
-                board["row_3"][j] === player
+                currentBoard["row_1"][j] === player &&
+                currentBoard["row_2"][j] === player &&
+                currentBoard["row_3"][j] === player
             ) {
                 handleVitctory(player === "PLAYER_ONE" ? "PLAYER_ONE" : "PLAYER_TWO")
             }
@@ -355,23 +289,23 @@ function Home() {
 
         // Verifica diagonais
         if (
-            (board["row_1"][0] === player && board["row_2"][1] === player && board["row_3"][2] === player) ||
-            (board["row_1"][2] === player && board["row_2"][1] === player && board["row_3"][0] === player)
+            (currentBoard["row_1"][0] === player && currentBoard["row_2"][1] === player && currentBoard["row_3"][2] === player) ||
+            (currentBoard["row_1"][2] === player && currentBoard["row_2"][1] === player && currentBoard["row_3"][0] === player)
         ) {
             handleVitctory(player);
 
         }
 
         // verifica se dedu velha
-        else if (board.row_1.indexOf("NO_PLAYER") < 0 && board.row_2.indexOf("NO_PLAYER") < 0 && board.row_3.indexOf("NO_PLAYER") < 0) {
-
+        else if (currentBoard.row_1.indexOf("NO_PLAYER") < 0 && currentBoard.row_2.indexOf("NO_PLAYER") < 0 && currentBoard.row_3.indexOf("NO_PLAYER") < 0) {
+            
             handleVitctory("DRAW");
         }
 
         return;
     }
 
-    function handleVitctory(player: "PLAYER_ONE" | "PLAYER_TWO" | "DRAW") {
+    async function handleVitctory(player: "PLAYER_ONE" | "PLAYER_TWO" | "DRAW") {
 
         let finallyMatch = scoreboard;
         const result = player === "PLAYER_ONE" ?
@@ -397,8 +331,52 @@ function Home() {
             }
         }
 
-        setScoreboard(finallyMatch);
-        setPlayerVictory({ open: true, player: result });
+        if (match === "online") {
+            const tokenJson = localStorage.getItem("token");
+
+            if (tokenJson) {
+                setPauseMatch(false);
+
+                const token = JSON.parse(tokenJson);
+                let data: string;
+
+                switch (player) {
+                    case "PLAYER_ONE": {
+                        data = "PLAYER_ONE";
+                        break;
+                    }
+                    case "PLAYER_TWO": {
+                        data = "PLAYER_TWO";
+                        break;
+                    }
+                    default: {
+                        data = "DRAW";
+                        break;
+                    }
+                }
+
+                const match = await axios.post(`${baseUrl}/match/${idMatch}`, {
+                    victory: data
+                }, {
+                    'headers': {
+                        "Authorization": `Bearer ${token}`
+                    }
+                })
+
+                setScoreboard({
+                    playerOne: match.data.numberOfWinsPlayerOne,
+                    playerTwo: match.data.numberOfWinsPlayerTwo,
+                    draws: match.data.numberOfDraws
+                });
+                setPlayerVictory({ open: true, player: result });
+
+            }
+        } else {
+            setScoreboard(finallyMatch);
+            setPlayerVictory({ open: true, player: result });
+        }
+
+
 
     }
 
@@ -410,14 +388,8 @@ function Home() {
     async function moveOnline(row: "row_1" | "row_2" | "row_3", index: number) {
         if (!infoMatch) return;
 
-        /* 
-            ATENÇÃO DESCOMENTE ESSES IFS
-            
-            eles são nescessarios para bloquear o jogador para que não 
-            jogue na vez do próximo 
-        */
-        // if (player?.player === "PLAYER_ONE" && !turnPlayer) return;
-        // if (player?.player === "PLAYER_TWO" && turnPlayer) return;
+        if (player?.player === "PLAYER_ONE" && !turnPlayer) return;
+        if (player?.player === "PLAYER_TWO" && turnPlayer) return;
 
         switch (row) {
             case "row_1":
@@ -506,7 +478,7 @@ function Home() {
             }, 500);
 
         } else {
-            console.log("Não há campos disponíveis.");
+            console.error("Não há campos disponíveis.");
         }
     }
 
@@ -521,8 +493,20 @@ function Home() {
             setTurnPlayer(false);
         }
 
+        else if (match === "online") {
+            ws?.send("reset board");
+            setPauseMatch(false);
+        }
+
         setPlayerVictory({ open: false, player: "DRAW" });
         setBoard(initialBoard);
+    }
+
+    function navigateHome() {
+        if (match === "online") {
+            ws?.close();
+        }
+        navigate("/", {replace: true});
     }
 
     return (
@@ -535,15 +519,15 @@ function Home() {
             )}
 
             {statusOnlie.loading && match === "online" && (
-            <>
-                <h1>{statusOnlie.text}...</h1>
-            </>)}
+                <>
+                    <h1>{statusOnlie.text}...</h1>
+                </>)}
 
             <Styled.ContainerBoard>
 
                 <Styled.OptionMatch>
 
-                    <img src={logoImg} alt="icon logo" onClick={() => navigate("/", { replace: true })} />
+                    <img src={logoImg} alt="icon logo" onClick={navigateHome} />
 
 
                     <Reveal y={-30} duration={.3} >
@@ -669,17 +653,17 @@ function Home() {
 
                     <Button btn="BUTTON_BLUE" option={"small"} borderbottom={"no_board"} hoverstyle={"no_hover_style"} >
                         X (P2)
-                        <strong> {scoreboard.playerTwo} </strong>
+                        <strong> {scoreboard.playerTwo > 0 ? scoreboard.playerTwo : 0} </strong>
                     </Button>
 
                     <Button btn="BUTTON_SILVER" option={"small"} borderbottom={"no_board"} hoverstyle={"no_hover_style"} >
                         VELHAS
-                        <strong> {scoreboard.draws} </strong>
+                        <strong> {scoreboard.draws > 0 ? scoreboard.draws : 0} </strong>
                     </Button>
 
                     <Button btn="BUTTON_YALLOW" option={"small"} borderbottom={"no_board"} hoverstyle={"no_hover_style"} >
                         O (P1)
-                        <strong> {scoreboard.playerOne} </strong>
+                        <strong> {scoreboard.playerOne > 0 ? scoreboard.playerOne : 0} </strong>
                     </Button>
 
                 </Styled.Scoreboard>
