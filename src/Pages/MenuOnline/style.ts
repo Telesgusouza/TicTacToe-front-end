@@ -46,15 +46,6 @@ export const ContainerContent = styled.section<IContainerContent>`
     box-shadow: 0 0 25px #18181840;
     background-color: var(--semiDarkNavy);
 
-    @keyframes loading {
-        0% {
-            rotate: 0deg;
-        }
-
-        100% {
-            rotate: 365deg;
-        }
-    }
 
     button {
         width: 100%;
@@ -65,10 +56,24 @@ export const ContainerContent = styled.section<IContainerContent>`
         cursor: ${props => props.disabled ? "not-allowed" : "pointer"};
     }
 
-    img {
-        height: 16px;
-        animation: loading 1s infinite;
+`;
+
+export const LoadingImg = styled.img`
+    @keyframes loading {
+        0% {
+            rotate: 0deg;
+        }
+
+        100% {
+            rotate: 365deg;
+        }
     }
+
+
+    height: 16px;
+    animation: loading 1s infinite;
+    
+
 `;
 
 export const SourcePlayer = styled.label<ISourcePlayer>`
@@ -131,9 +136,9 @@ export const AccordionFriends = styled.div`
     ul {
         display: grid;
         grid-template-columns: 1fr;
-        grid-gap: 6px;
+        grid-gap: 18px;
 
-        padding: 5px 7px;
+        padding: 14px 10px;
         border-radius: 7px;
         margin-top: 10px;
 
@@ -141,9 +146,19 @@ export const AccordionFriends = styled.div`
     }
 
     li {
+        display: flex;
 
         font-size: .95rem;
-
         cursor: pointer;
+    }
+
+    img {
+        object-fit: cover;
+
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+
+        margin-right: 4px;
     }
 `;

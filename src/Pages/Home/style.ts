@@ -195,3 +195,90 @@ export const Scoreboard = styled.section`
         }
     }
 `;
+
+export const AdversaryPhoto = styled.div`
+
+    min-height: 45px;
+    max-height: 45px;
+    width: 45px;
+
+    border-radius: 50%;
+    object-fit: cover;
+
+    background-color: #999999cc;
+    position: relative;
+
+    img {
+        min-height: 45px;
+        max-height: 45px;
+
+        min-width: 45px;
+        max-width: 45px;
+
+        object-fit: cover;
+
+        border-radius: 50%;
+    }
+
+    &::after, &::before {
+        display: none;
+
+        opacity: 0;
+        position: absolute;
+
+        top: 0;
+
+        transition: opacity .3s ease;
+    }
+
+    &::after {
+        content: "";
+
+        top: 0;
+        left: calc(100% + 5px);
+
+        border: 5px solid #10212a;
+        border-bottom-left-radius: 100%;
+
+    }
+
+    &::before {
+        content: "Informações do adversario" ;
+
+        left: calc(100% + 14px);
+
+        width: fit-content;
+
+        padding: 7px;
+
+        background-color: #10212a;
+
+        color: #f1f1f1;
+        font-size: .9rem;
+
+        transition: opacity .3s ease;
+    }
+
+
+    &:hover::after, &:hover::before {
+        display: block;
+        opacity: 1;
+    }
+
+    @media (max-width: 580px) {
+        &::after, &::before {
+            left: auto;
+            right: calc(100% - 40px);
+        }
+
+        &::after {
+            top: calc(100% + 5px);
+            border-bottom-left-radius: 0%;
+            border-top-left-radius: 100%;
+        }
+
+        &::before {
+            top: calc(100% + 15px);
+        }
+    }
+`;

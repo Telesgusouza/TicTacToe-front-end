@@ -36,9 +36,12 @@ export interface IVictory {
 
 export interface IMatch {
     id: string,
+
     matchCreationDate: string,
+    
     idPlayerOne: string,
     idPlayerTwo: string,
+    
     numberOfWinsPlayerOne: number,
     numberOfWinsPlayerTwo: number,
     numberOfMatches: number
@@ -50,8 +53,23 @@ export interface IBoard {
     row_3: ("PLAYER_ONE" | "PLAYER_TWO" | "NO_PLAYER")[];
 }
 
+export interface IBoardWS {
+    rows_1: ("PLAYER_ONE" | "PLAYER_TWO" | "NO_PLAYER")[];
+    rows_2: ("PLAYER_ONE" | "PLAYER_TWO" | "NO_PLAYER")[];
+    rows_3: ("PLAYER_ONE" | "PLAYER_TWO" | "NO_PLAYER")[];
+}
+
 export interface ICountMatches {
     playerOne: number;
     playerTwo: number;
     draws: number;
 }
+
+export interface IFriends {
+    id: string;
+
+    name: string;
+    img: string;
+    idPlayer: string;
+}
+

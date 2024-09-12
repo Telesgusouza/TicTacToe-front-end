@@ -10,17 +10,18 @@ import Button from "../../Components/Button";
 import Input from "../../Components/Input";
 import axios from "axios";
 import baseUrl from "../../Config/baseUrl";
-import { useDispatch, useSelector } from "react-redux";
-import ActionTypes from "../../Config/ActionTypes";
+import { useDispatch } from "react-redux";
+import { IFriends } from "../../Config/interfaces";
+
 
 function MenuOnline() {
     const [photo, setPhoto] = useState<string | null>(null);
     const [loadingMatch, setLoadingMatch] = useState<boolean>(false);
 
+    const [listFriends, setListFriends] = useState<IFriends[]>([]);
+
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    // const { ws } = useSelector((rootReducer: any) => rootReducer.WSReducer);
-    var ws: WebSocket ;
 
     useEffect(() => {
 
@@ -34,6 +35,35 @@ function MenuOnline() {
 
     }, []);
 
+    useEffect(() => {
+        async function getListFriends() {
+            try {
+                const jsonToken = localStorage.getItem("token");
+
+                if (jsonToken) {
+                    const token = JSON.parse(jsonToken);
+
+                    const requestData = await axios.get(baseUrl + "/user/list_friends", {
+                        'headers': {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    const jsonListFriends = JSON.stringify(requestData.data);
+
+                    localStorage.setItem("list_friends", jsonListFriends);
+
+                    setListFriends(requestData.data);
+                }
+
+
+            } catch (error) {
+                console.error("Error ao trazer lista de amigos");
+            }
+        }
+
+        getListFriends();
+    }, [])
 
     function handleNavigate(url: string) {
         navigate(url, { replace: true });
@@ -89,9 +119,6 @@ function MenuOnline() {
                 />
             </Styled.Header>
 
-            {/* {photo} */}
-            {/* <Home /> */}
-
             <Styled.ContainerContent disabled={loadingMatch} >
                 <Button
                     btn="BUTTON_YALLOW"
@@ -100,7 +127,7 @@ function MenuOnline() {
                 >
 
                     {loadingMatch ?
-                        <img src={iconRestart} alt="icone para carregamento" />
+                        <Styled.LoadingImg src={iconRestart} alt="icone para carregamento" />
                         : "PROCURAR PARTIDA"}
                 </Button>
 
@@ -110,6 +137,7 @@ function MenuOnline() {
                     <Input type="text" placeholder="ID" />
 
                     <ul>
+                        { }
                         <li>Gustavo #11111111111</li>
                         <li>Gustavo #11111111111</li>
                         <li>Gustavo #11111111111</li>
@@ -117,14 +145,52 @@ function MenuOnline() {
 
                 </Styled.SourcePlayer>
 
-                <Styled.AccordionFriends>
-                    <strong>Amigos</strong>
-                    <ul>
-                        <li>Gustavo #11111111111</li>
-                        <li>Gustavo #11111111111</li>
-                        <li>Gustavo #11111111111</li>
-                    </ul>
-                </Styled.AccordionFriends>
+                {listFriends.length > 0 && (
+                    <>
+                        <Styled.AccordionFriends>
+                            <strong>Amigos</strong>
+                            <ul>
+                                {listFriends.map((resp) => (
+
+                                    <li key={resp.id} >
+                                        <img src={!resp.img ? noUser : resp.img} alt="photo" />
+                                        <div>
+                                            <strong>{resp.name}</strong>
+                                            <p>#{resp.id}</p>
+                                        </div>
+                                    </li>
+
+                                ))}
+
+                                <li >
+                                    <img src={noUser} alt="photo" />
+                                    <div>
+                                        <strong>Gustavo Teles de Souza</strong>
+                                        <p>#11111-1111-1111-1111-1111-1111-1111-1111-1111-11111</p>
+                                    </div>
+                                </li>
+
+                                <li >
+                                    <img src={noUser} alt="photo" />
+                                    <div>
+                                        <strong>Gustavo Teles de Souza</strong>
+                                        <p>#11111-1111-1111-1111-1111-1111-1111-1111-1111-11111</p>
+                                    </div>
+                                </li>
+
+                                <li >
+                                    <img src={noUser} alt="photo" />
+                                    <div>
+                                        <strong>Gustavo Teles de Souza</strong>
+                                        <p>#11111-1111-1111-1111-1111-1111-1111-1111-1111-11111</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </Styled.AccordionFriends>
+                    </>
+                )}
+
+
 
             </Styled.ContainerContent>
 

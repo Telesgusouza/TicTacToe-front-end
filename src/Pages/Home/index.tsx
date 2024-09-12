@@ -1,25 +1,28 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Link } from 'react-scroll';
+import axios from "axios";
 
 import * as Styled from './style';
 import Button from '../../Components/Button';
+import { IBoard, IBoardWS, ICountMatches, IFriends, IMatch, IUser, IVictory } from "../../Config/interfaces";
 
 import logoImg from '../../assets/logo.svg';
 import IconXTurn from '../../assets/icon-x-turn.svg';
 import IconOTurn from '../../assets/icon-o-turn.svg';
 import iconRestart from '../../assets/icon-restart.svg';
+import imgNoUser from '../../assets/no-user.svg';
 
 import iconX from "../../assets/icon-x.svg";
 import iconO from "../../assets/icon-o.svg";
 
 import iconXEmptyField from "../../assets/icon-x-outline.svg";
 import iconOEmptyField from "../../assets/icon-o-outline.svg";
-import { IBoard, ICountMatches, IMatch, IUser, IVictory } from "../../Config/interfaces";
+
 import ModalVictoryMatch from "../../Components/ModalVictoryMatch";
 import Reveal from "../../Components/Reveal";
-import axios from "axios";
 import baseUrl from "../../Config/baseUrl";
+import InfoAdversary from "../../Components/InfoAdversary";
 
 interface IStatusOnline {
     loading: boolean;
@@ -45,6 +48,8 @@ function Home() {
     const [ws, setWs] = useState<WebSocket | null>(null);
     const [statusOnlie, setStatusOnlie] = useState<IStatusOnline>({ loading: true, text: "Carregando Tabuleiro" });
     const [pauseMatch, setPauseMatch] = useState<boolean>(false);
+    const [adversaryPhoto, setAdversaryPhoto] = useState<string | null>(null);
+    const [infoAdversaryToggle, setInfoAdversaryToggle] = useState<boolean>(true);
 
     const { match, idMatch } = useParams();
 
@@ -77,6 +82,14 @@ function Home() {
                         }
                     });
 
+                    const jsonUser = localStorage.getItem("user");
+
+                    if (jsonUser) {
+                        const user: IUser = JSON.parse(jsonUser);
+                        const photoUrl = user.player === "PLAYER_ONE" ? getMatch.data.photoPlayerTwo : getMatch.data.photoPlayerOne;
+                        setAdversaryPhoto(photoUrl);
+                    }
+
                     setScoreboard({
                         playerOne: getMatch.data.numberOfWinsPlayerOne,
                         playerTwo: getMatch.data.numberOfWinsPlayerTwo,
@@ -93,8 +106,8 @@ function Home() {
 
         if (match === "online") {
             setPauseMatch(true);
-            getInfoMatch();
             getInfoPlayer();
+            getInfoMatch();
         }
 
 
@@ -110,6 +123,7 @@ function Home() {
 
     useEffect(() => {
 
+        // estabelece uma coneção com o websockets
         async function connectionMatch() {
 
             if (match === "online" && !ws) {
@@ -142,40 +156,7 @@ function Home() {
                         newWs.send("view board");
                     };
 
-                    newWs.onmessage = async function (event: MessageEvent) {
-
-                        try {
-
-                            let data = JSON.parse(event.data);
-
-                            if (typeof data === 'string' && data.toLowerCase() === 'ping') {
-                                // Enviar pong como resposta ao ping
-                                newWs.send('pong');
-                                return;
-                            }
-
-                            if (!data || !data.board || !data.PlayerSTurn) {
-                                console.error("Invalid message structure:", event.data);
-                                return;
-                            }
-
-                            const jsonBoard = data.board;
-                            const boardData: IBoard = {
-                                row_1: jsonBoard.rows_1,
-                                row_2: jsonBoard.rows_2,
-                                row_3: jsonBoard.rows_3
-                            };
-
-                            setBoard(boardData);
-                            setTurnPlayer(data.PlayerSTurn === "PLAYER_ONE");
-
-                            // victoryCondition(turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO", boardData);
-                            victoryCondition((data.PlayerSTurn !== "PLAYER_ONE") ? "PLAYER_ONE" : "PLAYER_TWO", boardData);
-
-                        } catch (error) {
-                            console.error("Error parsing message:", error);
-                        }
-                    };
+                    onMessage(newWs);
 
                     setWs(newWs);
 
@@ -185,43 +166,12 @@ function Home() {
 
             } else if (ws) {
 
-                ws.onmessage = async function (event: MessageEvent) {
-
-                    try {
-                        let data = JSON.parse(event.data);
-
-                        if (typeof data === 'string' && data.toLowerCase() === 'ping') {
-                            // Enviar pong como resposta ao ping
-                            ws.send('pong');
-                            return;
-                        }
-
-                        if (!data || !data.board || !data.PlayerSTurn) {
-                            console.error("Invalid message structure:", event.data);
-                            return;
-                        }
-
-                        const jsonBoard = data.board;
-                        const boardData: IBoard = {
-                            row_1: jsonBoard.rows_1,
-                            row_2: jsonBoard.rows_2,
-                            row_3: jsonBoard.rows_3
-                        };
-
-                        setBoard(boardData);
-                        setTurnPlayer(data.PlayerSTurn === "PLAYER_ONE");
-
-                        victoryCondition((data.PlayerSTurn !== "PLAYER_ONE") ? "PLAYER_ONE" : "PLAYER_TWO", boardData);
-
-                    } catch (error) {
-                        console.error("Error parsing message:", error);
-                    }
-                };
-
+                onMessage(ws)
 
             }
         }
 
+        // respota PONG com o websockets
         function keepAlive() {
             if (ws) {
                 ws.send('ping');
@@ -239,6 +189,7 @@ function Home() {
             const getBoard = () => {
                 console.log("Atualizando board...");
                 ws?.send("view board");
+                ws?.send("standing game");
             };
 
             const intervalId = setInterval(getBoard, 6000);
@@ -298,7 +249,7 @@ function Home() {
 
         // verifica se dedu velha
         else if (currentBoard.row_1.indexOf("NO_PLAYER") < 0 && currentBoard.row_2.indexOf("NO_PLAYER") < 0 && currentBoard.row_3.indexOf("NO_PLAYER") < 0) {
-            
+
             handleVitctory("DRAW");
         }
 
@@ -503,14 +454,92 @@ function Home() {
     }
 
     function navigateHome() {
-        if (match === "online") {
-            ws?.close();
-        }
-        navigate("/", {replace: true});
+        navigate("/", { replace: true });
     }
+
+    function onMessage(ws: WebSocket) {
+        ws.onmessage = async function (event: MessageEvent) {
+
+            try {
+                let data: string | { board: IBoardWS, PlayerSTurn: string };
+
+                // Tentar parsear como JSON primeiro
+                try {
+                    data = JSON.parse(event.data);
+                } catch (error) {
+                    // Se falhar, assumir que é uma string simples
+                    data = event.data;
+                }
+
+                if (typeof data === 'string' && data.toLowerCase() === 'ping') {
+                    // Enviar pong como resposta ao ping
+                    console.log("ping")
+                    ws.send('pong');
+                    return;
+                }
+
+                if (typeof data === 'string' && data.toLowerCase() === "standing game") {
+                    return;
+                }
+
+                if (typeof data === 'string' && data.toLowerCase() === "close match") {
+
+                    ws.close();
+                    navigate("/menu_match_online", {
+                        replace: true
+                    });
+
+                    return;
+                }
+
+                if (typeof data === 'object' && data.board && data.PlayerSTurn) {
+
+                    const jsonBoard = data.board;
+                    const boardData: IBoard = {
+                        row_1: jsonBoard.rows_1,
+                        row_2: jsonBoard.rows_2,
+                        row_3: jsonBoard.rows_3
+                    };
+
+                    setBoard(boardData);
+                    setTurnPlayer(data.PlayerSTurn === "PLAYER_ONE");
+
+                    victoryCondition((data.PlayerSTurn !== "PLAYER_ONE") ? "PLAYER_ONE" : "PLAYER_TWO", boardData);
+
+                } else {
+                    console.error("Invalid message structure:", event.data);
+                    return;
+                }
+
+            } catch (error) {
+                console.error("Error parsing message:", error);
+            }
+        };
+    }
+
+    function closeOnline() {
+        if (ws) {
+            ws?.send("close match");
+        }
+    }
+
+    function onCloseInfoAdversary() {
+        setInfoAdversaryToggle(false);
+    } 
 
     return (
         <Styled.Container>
+
+
+            {match === "online" && infoAdversaryToggle && infoMatch && player && (
+                <>
+                    <InfoAdversary
+                        id={player.player === "PLAYER_ONE" ? infoMatch.idPlayerTwo : infoMatch.idPlayerOne}
+                        photo={adversaryPhoto ? adversaryPhoto : null}
+                        onclose={onCloseInfoAdversary}
+                    />
+                </>
+            )}
 
             {playerVictory.open && (
                 <>
@@ -527,7 +556,18 @@ function Home() {
 
                 <Styled.OptionMatch>
 
-                    <img src={logoImg} alt="icon logo" onClick={navigateHome} />
+                    {match !== "online" ? (
+                        <>
+                            <img src={logoImg} alt="icon logo" onClick={navigateHome} />
+                        </>
+                    ) : (
+                        <>
+                            <img
+                                src={player?.player === "PLAYER_ONE" ? iconO : iconX}
+                                alt="icon logo"
+                                onClick={closeOnline} />
+                        </>
+                    )}
 
 
                     <Reveal y={-30} duration={.3} >
@@ -546,20 +586,45 @@ function Home() {
                         </Link>
                     </Reveal>
 
+                    {match !== "online" ? (
+                        <>
+                            <Link
+                                to="board"
+                                spy={true}
+                                smooth={true}
+                                duration={500}
+                            >
+                                <Button btn='BUTTON_SILVER' option={"small"} onClick={realodMatch} >
 
-                    <Link
-                        to="board"
-                        spy={true}
-                        smooth={true}
-                        duration={500}
-                    >
-                        <Button btn='BUTTON_SILVER' option={"small"} onClick={realodMatch} >
+                                    <img src={iconRestart} alt="" />
 
-                            <img src={iconRestart} alt="" />
+                                </Button>
 
-                        </Button>
+                            </Link>
+                        </>
+                    ) : (
+                        <>
+                            {adversaryPhoto ? (
+                                <>
+                                    <Styled.AdversaryPhoto
+                                        onClick={() => setInfoAdversaryToggle(!infoAdversaryToggle)}
+                                    >
+                                        <img src={adversaryPhoto} alt="photo another player" />
+                                    </Styled.AdversaryPhoto>
+                                </>
+                            ) : (
+                                <>
+                                    <Styled.AdversaryPhoto
+                                        onClick={() => setInfoAdversaryToggle(!infoAdversaryToggle)}
+                                    >
+                                        <img src={imgNoUser} alt="photo another player" />
+                                    </Styled.AdversaryPhoto>
+                                </>
+                            )}
 
-                    </Link>
+                        </>
+                    )}
+
                 </Styled.OptionMatch>
 
                 <Styled.Board id="board" >
