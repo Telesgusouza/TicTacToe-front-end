@@ -13,6 +13,7 @@ import baseUrl from '../../Config/baseUrl';
 import imgNoUser from '../../assets/no-user.svg';
 import imgLockClose from '../../assets/lock-close.svg';
 import imgLockOpen from '../../assets/lock-open.svg';
+import { toast } from 'react-toastify';
 
 
 function Register() {
@@ -99,18 +100,22 @@ function Register() {
 
                 await handleSubmitFile(token.data.token);
 
-                navigate("/", { replace: true });
+                toast.success("Registrado com sucesso");
+
+                setTimeout(() => {
+                    navigate("/", { replace: true });                    
+                }, 200);
 
                 setBtnPress(false);
 
             }
         } catch (e) {
+            toast.error("Erro ao se registrar");
             console.error('error the register > ', e);
             setBtnPress(false);
         }
 
     }
-
 
     async function handleSubmitFile(token: string) {
         if (file == null) {

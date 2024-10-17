@@ -1,11 +1,7 @@
 import styled from "styled-components";
 
 interface ISourcePlayer {
-    visible: boolean;
-}
-
-interface IContainerContent {
-    disabled: boolean;
+    visible: string;
 }
 
 export const Container = styled.div`
@@ -35,7 +31,7 @@ export const Header = styled.header`
     }
 `;
 
-export const ContainerContent = styled.section<IContainerContent>`
+export const ContainerContent = styled.section`
     width: fit-content;
     padding: 15px;
     margin: 0 auto;
@@ -52,8 +48,6 @@ export const ContainerContent = styled.section<IContainerContent>`
 
         padding-bottom: 15px;
         border-width: 0px;
-
-        cursor: ${props => props.disabled ? "not-allowed" : "pointer"};
     }
 
 `;
@@ -95,7 +89,7 @@ export const SourcePlayer = styled.label<ISourcePlayer>`
         position: absolute;
         top: calc(100% + 5px);
 
-        display: ${props => props.visible ? "grid" : "none"};
+        display: ${props => props.visible === "visible" ? "grid" : "none"};
 
         width: 100%;
         margin-bottom: 20px;

@@ -31,6 +31,9 @@ function Menu() {
 
                     const dataUser: IUser = requestUser.data;
 
+                    console.log("=====================================");
+                    console.log(requestUser)
+
                     const jsonUser: IUser = {
                         name: dataUser.name,
                         login: dataUser.login,

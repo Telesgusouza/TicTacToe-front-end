@@ -15,7 +15,7 @@ function Input({type, placeholder, onChange, value, error = false}: IProps) {
         <>
             <Styled.Input 
 
-                error={error}
+                error={error ? "error" : ""}
 
                 type={type}
                 placeholder={placeholder}

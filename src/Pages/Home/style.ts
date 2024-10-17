@@ -29,10 +29,7 @@ export const OptionMatch = styled.article`
     justify-content: space-between;
     align-items: center;
 
-    img {
-        height: 25px;
-        cursor: pointer;
-    }
+    
 
 
     button {
@@ -59,6 +56,68 @@ export const OptionMatch = styled.article`
 
     }
     
+`;
+
+export const Logo = styled.div`
+
+    position: relative;
+    cursor: pointer;
+
+    img {
+        height: 25px;
+    }
+
+    &::after, &::before {
+        display: none;
+    }
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: calc(100% + 5px);
+
+        width: 0;
+        height: 0;
+        
+        border: 5px solid #10212a;
+        border-bottom-right-radius: 100%;
+    }
+
+    &::before {
+        content: "Sair da partida";
+        position: absolute;
+        top: 0;
+        right: calc(100% + 15px);
+
+        padding: 10px;
+
+        background-color: #10212a;
+
+        color: #f4f4f4;
+    }
+
+    &:hover::after, &:hover::before {
+        display: block;
+    }
+
+    @media (max-width: 580px) {
+        &::after {
+            top: calc(100% + 5px);
+            right: 0;
+            left: calc(100% - 35px);
+
+            border-bottom-right-radius: 0%;
+            border-top-right-radius: 100%;
+        }
+
+        &::before {
+            top: calc(100% + 15px);
+            right: initial;
+            left: calc(100% - 35px);
+        }
+    }
+
 `;
 
 export const Turn = styled.div`
@@ -218,6 +277,8 @@ export const AdversaryPhoto = styled.div`
         object-fit: cover;
 
         border-radius: 50%;
+
+        cursor: pointer;
     }
 
     &::after, &::before {

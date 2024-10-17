@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 interface IProps {
-    error: boolean;
+    error: string;
 }
 
 export const Input = styled.input<IProps>`    
@@ -10,7 +10,7 @@ export const Input = styled.input<IProps>`
     color: white;
 
     border: none;
-    border-bottom: 2px solid ${props => props.error ? '#ed3419' : 'var(--silver)'}; // #df2c14
+    border-bottom: 2px solid ${props => props.error === "error" ? '#ed3419' : 'var(--silver)'}; // #df2c14
 
     background-color: transparent;
 

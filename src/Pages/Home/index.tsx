@@ -49,7 +49,7 @@ function Home() {
     const [statusOnlie, setStatusOnlie] = useState<IStatusOnline>({ loading: true, text: "Carregando Tabuleiro" });
     const [pauseMatch, setPauseMatch] = useState<boolean>(false);
     const [adversaryPhoto, setAdversaryPhoto] = useState<string | null>(null);
-    const [infoAdversaryToggle, setInfoAdversaryToggle] = useState<boolean>(true);
+    const [infoAdversaryToggle, setInfoAdversaryToggle] = useState<boolean>(false);
 
     const { match, idMatch } = useParams();
 
@@ -525,7 +525,7 @@ function Home() {
 
     function onCloseInfoAdversary() {
         setInfoAdversaryToggle(false);
-    } 
+    }
 
     return (
         <Styled.Container>
@@ -558,14 +558,19 @@ function Home() {
 
                     {match !== "online" ? (
                         <>
-                            <img src={logoImg} alt="icon logo" onClick={navigateHome} />
+                            <Styled.Logo>
+                                <img src={logoImg} alt="icon logo" onClick={navigateHome} />
+                            </Styled.Logo>
                         </>
                     ) : (
                         <>
-                            <img
-                                src={player?.player === "PLAYER_ONE" ? iconO : iconX}
-                                alt="icon logo"
-                                onClick={closeOnline} />
+                            <Styled.Logo>
+                                <img
+                                    src={player?.player === "PLAYER_ONE" ? iconO : iconX}
+                                    alt="icon logo"
+                                    onClick={closeOnline} />
+                            </Styled.Logo>
+
                         </>
                     )}
 

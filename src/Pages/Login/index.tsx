@@ -11,6 +11,7 @@ import imgLockClose from '../../assets/lock-close.svg';
 import imgLockOpen from '../../assets/lock-open.svg';
 import axios from 'axios';
 import baseUrl from '../../Config/baseUrl';
+import { toast } from 'react-toastify';
 
 function Login() {
     const [email, setEmail] = useState<string>("");
@@ -58,9 +59,15 @@ function Login() {
                 const jsonToken = JSON.stringify(token.data.token);
 
                 localStorage.setItem("token", jsonToken);
-                navigate("/", {replace: true});
+
+                toast.success("Logado com sucesso");
+
+                setTimeout(() => {
+                    navigate("/", {replace: true});                    
+                }, 200);
 
             } catch (e) {
+                toast.error("Erro ao fazer login, tente novamente");
                 console.error("error login > ", e);
             }
         }

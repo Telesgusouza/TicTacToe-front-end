@@ -9,6 +9,7 @@ import imgNoUser from '../../assets/no-user.svg';
 import Button from '../Button';
 import { IFriends } from '../../Config/interfaces';
 import Reveal from '../Reveal';
+import { toast } from 'react-toastify';
 
 interface IProps {
     id: string;
@@ -81,7 +82,9 @@ export default function InfoAdversary({ id, photo, onclose }: IProps) {
                 });
 
                 updateListFriends(addData.data);
+
                 setIsOnTheList(false);
+                toast.success("Adicionado aos amigos com sucesso");
 
                 setTimeout(() => {
                     onclose();
@@ -89,6 +92,7 @@ export default function InfoAdversary({ id, photo, onclose }: IProps) {
             }
 
         } catch (error) {
+            toast.error("Erro ao adicionar aos amigos");
             console.error("Error > ", error);
         }
     }
@@ -97,14 +101,13 @@ export default function InfoAdversary({ id, photo, onclose }: IProps) {
 
         const jsonList = localStorage.getItem("list_friends");
 
-        if (jsonList) {
-            const list: IFriends[] = JSON.parse(jsonList);
-            list.push(data);
+        const list: IFriends[] = jsonList ? JSON.parse(jsonList) : [];
+        list.push(data);
 
-            localStorage.setItem("list_friends",
-                JSON.stringify(list)
-            );
-        }
+        localStorage.setItem("list_friends",
+            JSON.stringify(list)
+        );
+
 
     }
 
@@ -137,17 +140,6 @@ export default function InfoAdversary({ id, photo, onclose }: IProps) {
                         </Button>
                     </>
                 )}
-
-                <Button
-                    btn='BUTTON_SILVER'
-                    option='small'
-                    borderbottom='no_board'
-
-                    onClick={onclose}
-                >
-                    sair
-                </Button>
-
 
             </Styled.Container>
         </Reveal>
