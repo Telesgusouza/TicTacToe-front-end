@@ -54,7 +54,7 @@ export default function InfoAdversary({ id, photo, onclose }: IProps) {
                 }
 
             } catch (error) {
-                console.error("Error when searching for opposing player data");
+                console.error("Error when searching for opposing player data: " + error);
             }
         }
         getInfoPlayer();

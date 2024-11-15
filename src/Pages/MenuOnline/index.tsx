@@ -64,21 +64,21 @@ function MenuOnline() {
 
         getListFriends();
     }, [])
-    
+
     useEffect(() => {
 
         async function connectWebSocket() {
-
             if (loadingMatch) {
                 try {
 
                     const idUser = await handleConnectMatch();
                     const newWs = new WebSocket("ws://localhost:8081/matchmaking?id_user=" + idUser.uid);
 
+
                     setTimeout(() => {
                         toast.warn("Erro ao encotrar partida");
                         closeQueueMatch(newWs);
-                    }, 1000*70);
+                    }, 1000 * 70);
 
                     setWs(newWs);
 
@@ -135,6 +135,7 @@ function MenuOnline() {
 
                 } catch (e) {
                     console.error("Erro na conexão websockets/WS > ", e);
+                    console.log("NÃO DEVERIA CHEGAR AQUI")
                 }
             }
         }

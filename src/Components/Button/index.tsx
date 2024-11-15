@@ -1,5 +1,4 @@
-import React from "react";
-
+import React from 'react';
 import * as Styled from './style';
 
 interface IProps {
@@ -37,7 +36,6 @@ function Button({
 
             hoverstyle={hoverstyle}
         >
-
             {children}
         </Styled.Button>
     )

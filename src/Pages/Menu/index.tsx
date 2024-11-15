@@ -19,7 +19,7 @@ function Menu() {
 
             setLogged(false);
 
-            if (!!jsonToken) {
+            if (jsonToken) {
                 try {
                     const token = JSON.parse(jsonToken);
 
@@ -30,9 +30,6 @@ function Menu() {
                     })
 
                     const dataUser: IUser = requestUser.data;
-
-                    console.log("=====================================");
-                    console.log(requestUser)
 
                     const jsonUser: IUser = {
                         name: dataUser.name,
