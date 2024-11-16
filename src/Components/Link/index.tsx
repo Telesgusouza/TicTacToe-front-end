@@ -5,7 +5,14 @@ const STATUS = {
   NORMAL: 'normal',
 };
 
-export default function Link({page, children}) {
+// interface LinkProps {
+//   page: string;
+//   children: React.ReactNode;
+// }
+
+export default function Link({page, children}
+  // : LinkProps
+) {
   const [status, setStatus] = useState(STATUS.NORMAL);
 
   const onMouseEnter = () => {
