@@ -23,7 +23,9 @@ function Button({
     onClick,
 
     hoverstyle = ""
-}: IProps) {
+}
+: IProps
+) {
 
     return (
         <Styled.Button

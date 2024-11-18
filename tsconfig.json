@@ -7,5 +7,10 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "esModuleInterop": true,
-  }
+    "types": ["node", "jest", "@testing-library/react"]
+  },
+  "include": [
+    "src/**/*",
+    "setupTests.ts"
+  ]
 }
