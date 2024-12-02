@@ -12,6 +12,8 @@ import imgLockOpen from '../../assets/lock-open.svg';
 import axios from 'axios';
 import baseUrl from '../../Config/baseUrl';
 import { toast } from 'react-toastify';
+import Reload from '../../Components/Reload';
+// import { findPhotoWithToken } from '../../Config/utils';
 
 function Login() {
     const [email, setEmail] = useState<string>("");
@@ -21,6 +23,7 @@ function Login() {
     const [wrongPassword, setWrongPassword] = useState<boolean>(false);
 
     const [seePassword, setSeePassword] = useState<boolean>(false);
+    const [btnPress, setBtnPress] = useState<boolean>(false);
 
     const navigate = useNavigate();
 
@@ -29,7 +32,6 @@ function Login() {
             setWrongEmail(false)
         }
     }, [email])
-
 
     useEffect(() => {
         if (password) {
@@ -43,6 +45,7 @@ function Login() {
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
+        setBtnPress(true);
 
         const emailRegex = /^[a-zA-Z0-9_.±]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$/;
         setWrongEmail(!emailRegex.test(email));
@@ -63,14 +66,47 @@ function Login() {
                 toast.success("Logado com sucesso");
 
                 setTimeout(() => {
-                    navigate("/", {replace: true});                    
+                    navigate("/", { replace: true });
                 }, 200);
 
-            } catch (e) {
-                toast.error("Erro ao fazer login, tente novamente");
+                setBtnPress(false);
+
+            } catch (error) {
+
+                if (axios.isAxiosError(error)) {
+                    const message = error.response?.data.message;
+
+                    switch (message) {
+                        case "Error with passed token. id Authentication failed": {
+                            toast.warn("Conta não existe, tente novamente");
+                            break;
+                        }
+
+                        case "incorrect field. id incorrect password": {
+                            toast.warn("Senha incorreta, tentei novamente");
+                            break;
+                        }
+
+                        case "incorrect field. id Authentication failed": {
+                            toast.warn("Autenticação falhou");
+                            break;
+                        }
+
+                        default: {
+                            toast.warn("Erro desconhecido ao fazer login");
+                        }
+                    }
+                } else {
+                    toast.error("Erro ao fazer login, tente novamente");
+                }
+
                 console.error("error login > ", e);
+
+                setBtnPress(false);
             }
         }
+
+        setBtnPress(false);
 
     }
 
@@ -103,7 +139,15 @@ function Login() {
                     <img src={seePassword ? imgLockOpen : imgLockClose} alt="icon for password" onClick={() => setSeePassword(!seePassword)} />
                 </Styled.InputPassword>
 
-                <Button btn='BUTTON_SILVER' option={"small"} >Entrar</Button>
+                <Button
+                    disabled={btnPress ? "disabled_button" : ""}
+
+                    btn='BUTTON_SILVER'
+                    option={"small"}
+                >
+                    {btnPress ? (<Reload />) : "Entrar"}
+
+                </Button>
 
                 <p>Ainda não tem conta? <span onClick={() => handleNavigate("/register")} >Cadastre-se</span></p>
 

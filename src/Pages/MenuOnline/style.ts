@@ -10,7 +10,8 @@ export const Container = styled.div`
     
     min-height: 100vh;
 
-    padding: 10px;
+    padding: 15px;
+    padding-top: 25px;
     margin: 0 auto;
 
     padding-bottom: 50px;

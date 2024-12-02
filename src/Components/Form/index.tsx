@@ -9,7 +9,7 @@ interface IProps {
 function Form({ children, onSubmit }: IProps) {
 
     return (
-        <Styled.Form onSubmit={onSubmit} >
+        <Styled.Form onSubmit={onSubmit} role="form" >
             {children}
         </Styled.Form>
     )

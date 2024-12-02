@@ -73,3 +73,10 @@ export interface IFriends {
     idPlayer: string;
 }
 
+export interface errorAxios {
+    timestamp: string,
+    status: number,
+    error: string,
+    message: string,
+    path: string
+} 

@@ -14,7 +14,8 @@ import imgNoUser from '../../assets/no-user.svg';
 import imgLockClose from '../../assets/lock-close.svg';
 import imgLockOpen from '../../assets/lock-open.svg';
 import { toast } from 'react-toastify';
-
+import Reload from '../../Components/Reload';
+import { errorAxios } from '../../Config/interfaces';
 
 function Register() {
 
@@ -56,6 +57,10 @@ function Register() {
         if (e && e.target.files && e.target.files.length > 0) {
             const file = e.target.files?.[0];
 
+            if (!file.type.startsWith("image/")) {
+                toast.warn("Arquivo deve ser uma foto");
+            }
+
             if (file && file.type.startsWith("image/")) {
 
                 setFile(file);
@@ -89,7 +94,7 @@ function Register() {
                 && emailRegex.test(email)
                 && password.length > 5) {
 
-                const token = await axios.post(baseUrl + "/auth/register", {
+                const token = await axios.post(`${baseUrl}/auth/register`, {
                     name: name,
                     login: email,
                     password: password + ""
@@ -98,22 +103,65 @@ function Register() {
                 const jsonToken = JSON.stringify(token.data.token);
                 localStorage.setItem("token", jsonToken);
 
-                await handleSubmitFile(token.data.token);
+                if (file != null) {
+                    await handleSubmitFile(token.data.token);
+                }
 
                 toast.success("Registrado com sucesso");
 
                 setTimeout(() => {
-                    navigate("/", { replace: true });                    
+                    navigate("/", { replace: true });
                 }, 200);
 
                 setBtnPress(false);
 
             }
-        } catch (e) {
-            toast.error("Erro ao se registrar");
-            console.error('error the register > ', e);
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+
+                const message = error.response?.data?.message;
+
+                const data: errorAxios = {
+                    timestamp: error.response?.data?.timestamp,
+                    status: error.response?.data?.status,
+                    error: error.response?.data?.error,
+                    message: error.response?.data?.message,
+                    path: error.response?.data?.path
+                }
+
+                switch (message) {
+                    case "incorrect field. id account already exists": {
+                        toast.error("Conta já existe, tente outro email");
+                        setEmail("");
+                        break;
+                    }
+
+                    case "incorrect field. id must have at least 6 characters and less than 50": {
+                        toast.error("Senha deve ter entre 6 e 50 caracteres");
+                        break;
+                    }
+
+                    case "incorrect field. id Error while generating token": {
+                        toast.error("Erro ao gerar token de acesso");
+                        break;
+                    }
+
+                    default: {
+                        toast.error("Erro na requisição, tentei novamente")
+                    }
+                }
+
+                console.error("Error request: " + data);
+
+            } else {
+                toast.error("Erro desconhecido tente novamente mais tarde");
+                console.error('error the register > ', e);
+            }
+
             setBtnPress(false);
         }
+
+        setBtnPress(false);
 
     }
 
@@ -123,19 +171,45 @@ function Register() {
         }
 
         try {
-            const formData = new FormData;
-            formData.append('file', file);
+            if (file.type === "image/jpeg") {
 
-            await axios.post(baseUrl + "/file", formData, {
-                headers: {
-                    'Authorization': 'Bearer ' + token,
-                    'Content-Type': 'multipart/form-data'
+                const formData = new FormData;
+                formData.append('file', file);
+
+                await axios.post(baseUrl + "/file", formData, {
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+
+            }
+
+        } catch (error) {
+
+            if (axios.isAxiosError(error)) {
+
+                const message = error.response?.data.metadataResponseDTO.message;
+
+                switch (message) {
+                    case "invalid field": {
+                        toast.error("Tipo de arquivo invalido");
+                        break;
+                    }
+                    case "failed to upload file in s3 bucket": {
+                        toast.error("Erro ao subir imagem");
+                        break;
+                    }
+
+                    default: {
+                        toast.error("Erro inesperado ao subir arquivo")
+                    }
                 }
-            });
+            } else {
+                toast.error("Sugiu um erro ao subirmos a foto");
+            }
 
-
-        } catch (e) {
-            console.error("error submit file > ", e);
+            console.error("error submit file > ", error);
         }
     }
 
@@ -152,8 +226,8 @@ function Register() {
                 <h1>REGISTRO</h1>
 
                 <Styled.PhotoInput>
-                    <input type="file" onChange={e => handlePhoto(e)} />
-                    <img src={fileBase64 ? fileBase64 : imgNoUser} alt="" />
+                    <input type="file" placeholder='file_photo' onChange={e => handlePhoto(e)} />
+                    <img src={fileBase64 ? fileBase64 : imgNoUser} alt="photo user" />
                 </Styled.PhotoInput>
 
                 <Input
@@ -183,12 +257,16 @@ function Register() {
                         onChange={e => setPassword(e.target.value)}
                     />
 
-                    <img src={seePassword ? imgLockOpen : imgLockClose } alt="icon for password" onClick={() => setSeePassword(!seePassword)} />
+
+
+                    <img src={seePassword ? imgLockOpen : imgLockClose} alt="icon for password" onClick={() => setSeePassword(!seePassword)} />
                 </Styled.InputPassword>
 
 
 
-                <Button btn='BUTTON_SILVER' option={"small"} disabled={btnPress ? "disabled_button" : ""} >Registre-se</Button>
+                <Button btn='BUTTON_SILVER' option={"small"} disabled={btnPress ? "disabled_button" : ""} >
+                    {btnPress ? (<Reload />) : "Registre-se"}
+                </Button>
 
                 <p>Já tem conta? <span onClick={() => handleNavigate("/login")} >Faça login</span></p>
 
