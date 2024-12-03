@@ -19,7 +19,7 @@ function MenuOnline() {
     const [loadingMatch, setLoadingMatch] = useState<boolean>(false);
     const [closeQueue, setCloseQueue] = useState<boolean>(false);
 
-    const [ highLatency, setHighLatency] = useState<boolean>(false);
+    const [highLatency, setHighLatency] = useState<boolean>(false);
 
     const [listFriends, setListFriends] = useState<IFriends[]>([]);
 
@@ -78,7 +78,6 @@ function MenuOnline() {
                     const idUser = await handleConnectMatch();
 
                     const newWs = new WebSocket("ws://localhost:8081/matchmaking?id_user=" + idUser.uid);
-                    // const lastPingTime = null;
 
                     setTimeout(() => {
                         toast.warn("Erro ao encotrar partida");
@@ -91,8 +90,6 @@ function MenuOnline() {
                         console.log("Conexão estabelecida");
                         const currentTime = Date.now();
                         newWs.send(`pong:${currentTime}`); // Envia ping assim que a conexão é aberta
-
-                        // setPing(Date.now());
                     };
 
                     newWs.onclose = function () {
@@ -116,21 +113,23 @@ function MenuOnline() {
                             const matchData = JSON.parse(message.substring(13));
                             console.log('Partida encontrada: ', matchData);
                             // Lógica para iniciar a partida
-                        } else if (message === 'ping') {
+                        } 
+                        
+                        else if (message === 'ping') {
+                            
                             const currentTime = Date.now();
                             newWs.send(`pong:${currentTime}`);
 
                         } else if (message.startsWith('pong')) {
+
                             const [_, clientTimestamp] = message.split(':');
-                            calculateLatency(Number(clientTimestamp));
 
-                            // console.log();
-                            // console.log();
-
-                            // console.log("Client timestamp: " + clientTimestamp);
-
-                            // console.log();
-                            // console.log();
+                            if (clientTimestamp > 300) { // Ajuste este valor conforme necessário
+                                console.warn(`Latência alta detectada: ${clientTimestamp}ms`);
+                                setHighLatency(true);
+                            } else {
+                                setHighLatency(false);
+                            }
 
                         }
 
@@ -171,36 +170,6 @@ function MenuOnline() {
 
     }, [loadingMatch, closeQueue]);
 
-    /*
-    
-    dentro da função calculateLatency, dentro do react agora recebo a latencia, recebo uma média desse valor Latência: 433276126911.5ms, qual 
-    valor seria o ideal para eu avisar o usuario de latencia alta
-    
-    */
-
-    function calculateLatency(clientTimestamp: number) {
-        const serverTimestamp = Date.now();
-        const latency = (serverTimestamp - clientTimestamp) / 2;
-
-        console.log();
-        console.log();
-
-        console.log(`Latência: ${latency}ms`);
-
-        console.log();
-        console.log();
-
-        if (latency > 933275802582) {
-            setHighLatency(true);
-        } else {
-            setHighLatency(false);
-        }
-
-        // Você pode usar esta latência para atualizar o estado ou exibi-la na UI
-
-        // if()
-    }
-
     function closeQueueMatch(currentWs: WebSocket) {
         if (currentWs) {
             currentWs.close();
@@ -221,7 +190,6 @@ function MenuOnline() {
         const tokenJson = localStorage.getItem("token");
 
         try {
-
 
             if (tokenJson) {
                 const token = JSON.parse(tokenJson);

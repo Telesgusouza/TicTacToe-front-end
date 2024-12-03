@@ -29,6 +29,8 @@ export const Header = styled.header`
         border-radius: 50%;
 
         background-color: #f0f0f0;
+
+        cursor: pointer;
     }
 `;
 
