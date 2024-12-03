@@ -269,7 +269,7 @@ function MenuOnline() {
                         src={photo ? photo : noUser}
                         alt="foto do usuario"
 
-                        onClick={() => handleNavigate("/info_user")}
+                        onClick={() => handleNavigate("/info_user/menu_online")}
                         className="photoPerfil"
                     />
 

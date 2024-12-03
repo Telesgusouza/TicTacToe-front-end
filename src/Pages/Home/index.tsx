@@ -83,16 +83,7 @@ function Home() {
                     });
 
 
-                    // console.log()
-                    // console.log()
-
-                    // console.log("=================================")
-                    // console.log("== perfeito estamos aqui agora ==")
-                    // console.log(getMatch);
-                    // console.log("=================================")
-
-                    // console.log()
-                    // console.log()
+                  
 
                     const jsonUser = localStorage.getItem("user");
 
@@ -212,8 +203,6 @@ function Home() {
     })
 
     async function handleMovePlayer(row: "row_1" | "row_2" | "row_3", index: number) {
-
-
 
         if (match === "vs_player") {
             move(row, index);
@@ -354,28 +343,8 @@ function Home() {
     */
     async function moveOnline(row: "row_1" | "row_2" | "row_3", index: number) {
 
-
-        console.log();
-        console.log();
-
-        console.log("================================");
-        console.log("dentro da função");
-        console.log(infoMatch)
-
-        console.log();
-        console.log();
-
         if (!infoMatch) return;
 
-        console.log();
-        console.log();
-
-        console.log("==============================");
-        console.log("Vamos entender o que aconteceu");
-        console.log("==============================");
-
-        console.log();
-        console.log();
 
         if (player?.player === "PLAYER_ONE" && !turnPlayer) return;
         if (player?.player === "PLAYER_TWO" && turnPlayer) return;
