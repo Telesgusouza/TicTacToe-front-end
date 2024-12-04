@@ -23,6 +23,7 @@ export const Container = styled.div`
 
     background-color: rgba(0, 0, 0, .4);
 
+
     div:nth-child(1) {
         width: 100%;
     }
@@ -36,7 +37,6 @@ export const ContainerContent = styled.section<IProps>`
     text-align: center;
 
     background-color: var(--semiDarkNavy);
-
 
     article, div {
         display: flex;

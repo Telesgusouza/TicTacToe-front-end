@@ -83,7 +83,7 @@ function Home() {
                     });
 
 
-                  
+
 
                     const jsonUser = localStorage.getItem("user");
 
@@ -202,13 +202,21 @@ function Home() {
         }
     })
 
+    useEffect(() => {
+        
+        if (!playerVictory.open && turnPlayer && match === "single_player" ) {
+            machineMove();
+        }
+
+    }, [turnPlayer])
+
     async function handleMovePlayer(row: "row_1" | "row_2" | "row_3", index: number) {
 
         if (match === "vs_player") {
             move(row, index);
         } else if (match === "single_player" && !turnPlayer) {
             await move(row, index);
-            machineMove();
+
         } else if (match === "online" && !statusOnlie.loading) {
 
             moveOnline(row, index);
@@ -229,6 +237,7 @@ function Home() {
                 currentBoard[rowKey as keyof IBoard][2] === player
             ) {
                 handleVitctory(player);
+                return true;
             }
         }
 
@@ -240,6 +249,7 @@ function Home() {
                 currentBoard["row_3"][j] === player
             ) {
                 handleVitctory(player === "PLAYER_ONE" ? "PLAYER_ONE" : "PLAYER_TWO")
+                return true;
             }
         }
 
@@ -249,13 +259,13 @@ function Home() {
             (currentBoard["row_1"][2] === player && currentBoard["row_2"][1] === player && currentBoard["row_3"][0] === player)
         ) {
             handleVitctory(player);
-
+            return true;
         }
 
-        // verifica se dedu velha
+        // verifica se deu velha
         else if (currentBoard.row_1.indexOf("NO_PLAYER") < 0 && currentBoard.row_2.indexOf("NO_PLAYER") < 0 && currentBoard.row_3.indexOf("NO_PLAYER") < 0) {
-
             handleVitctory("DRAW");
+            return true;
         }
 
         return;
@@ -330,9 +340,8 @@ function Home() {
         } else {
             setScoreboard(finallyMatch);
             setPlayerVictory({ open: true, player: result });
+            return;
         }
-
-
 
     }
 
@@ -376,27 +385,33 @@ function Home() {
         }
     }
 
-    function move(row: "row_1" | "row_2" | "row_3", index: number) {
+    async function move(row: "row_1" | "row_2" | "row_3", index: number) {
         switch (row) {
             case "row_1": {
                 if (board.row_1[index] !== "NO_PLAYER") return;
-
+                
                 board.row_1[index] = turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO";
+
                 break;
+
             }
 
             case "row_2": {
                 if (board.row_2[index] !== "NO_PLAYER") return;
 
                 board.row_2[index] = turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO";
+
                 break;
+
             }
 
             case "row_3": {
                 if (board.row_3[index] !== "NO_PLAYER") return;
 
                 board.row_3[index] = turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO";
+
                 break;
+
             }
 
             default: {
@@ -408,9 +423,16 @@ function Home() {
         setBoard(board);
         victoryCondition(turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO");
         setTurnPlayer(!turnPlayer);
+
     }
 
     async function machineMove() {
+
+        if (playerVictory.open) {
+            console.log("Jogo já finalizado, máquina não fará jogada.");
+            return;
+        }
+
         // Lista para armazenar os índices dos campos "NO_PLAYER"
         let availableFields = [];
 
