@@ -1,5 +1,8 @@
 import axios from "axios"
 import baseUrl from "./baseUrl"
+import { useNavigate } from "react-router-dom";
+
+const navigate = useNavigate();
 
 export async function findPhotoWithToken(token: string) {
     try {
@@ -15,5 +18,5 @@ export async function findPhotoWithToken(token: string) {
     } catch (error) {
         console.error("Error when uploading photo: " + error)
     }
-
 }
+

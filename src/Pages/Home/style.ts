@@ -14,6 +14,29 @@ export const Container = styled.div`
 
 `;
 
+export const Header = styled.header`
+    width: 100%;
+
+    display: flex;
+    justify-content: end;
+    align-items: center;
+
+    padding: 16px 0 10px 0;
+
+    img {
+        width: 30px;
+        height: 30px;
+        object-fit: cover;
+
+        border-radius: 50%;
+
+        background-color: #f0f0f0;
+
+        cursor: pointer;
+    }
+
+`;
+
 export const ContainerBoard = styled.section`
     width: 100%;
     max-width: 340px;
@@ -53,7 +76,6 @@ export const OptionMatch = styled.article`
                 transform: rotate(360deg);
             }
         }
-
     }
     
 `;

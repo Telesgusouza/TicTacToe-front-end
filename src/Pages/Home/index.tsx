@@ -2,6 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Link } from 'react-scroll';
 import axios from "axios";
+import { toast } from 'react-toastify';
 
 import * as Styled from './style';
 import Button from '../../Components/Button';
@@ -37,6 +38,8 @@ function Home() {
         row_3: ["NO_PLAYER", "NO_PLAYER", "NO_PLAYER"],
     };
 
+    const [photo, setPhoto] = useState<string | null>(null);
+
     const [scoreboard, setScoreboard] = useState<ICountMatches>({ playerOne: 0, playerTwo: 0, draws: 0 });
     const [playerVictory, setPlayerVictory] = useState<IVictory>({ player: "DRAW", open: false });
     const [turnPlayer, setTurnPlayer] = useState<boolean>(false);
@@ -55,15 +58,34 @@ function Home() {
 
     const navigate = useNavigate();
 
+    /*
+    
+    
+    */
+
     useEffect(() => {
 
-        function getInfoPlayer() {
-            const jsonUser = localStorage.getItem("user");
+        async function getInfoPlayer() {
+            const jsonToken = localStorage.getItem("token");
 
-            if (jsonUser) {
-                const user: IUser = JSON.parse(jsonUser);
+            if (jsonToken) {
+                try {
 
-                setPlayer(user);
+                    const token = JSON.parse(jsonToken);
+
+                    const response = await axios.get(`${baseUrl}/user`, {
+                        'headers': {
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    });
+
+                    setPlayer(response.data);
+                    localStorage.setItem("user", JSON.stringify(response.data));
+                } catch (error) {
+                    // console.error('Error fetching user data:', error.response?.data || error.message);
+                    console.error('Error fetching user data: ', error);
+
+                }
             }
         }
 
@@ -81,9 +103,6 @@ function Home() {
                             'Authorization': `Bearer ${token}`
                         }
                     });
-
-
-
 
                     const jsonUser = localStorage.getItem("user");
 
@@ -120,67 +139,12 @@ function Home() {
         return () => {
             if (ws) {
                 ws.close();
+                setWs(null);
             }
         };
     }, []);
 
     useEffect(() => {
-
-        // estabelece uma coneção com o websockets
-        async function connectionMatch() {
-
-            if (match === "online" && !ws) {
-                try {
-                    const ticket = (await axios.post(`${baseUrl}/ticket/${idMatch}`)).data.ticket;
-
-                    const newWs = new WebSocket("ws://localhost:8080/match?server=" + idMatch + "&ticket=" + ticket);
-
-                    newWs.onopen = () => {
-                        console.log('Connected to WebSocket server');
-                        keepAlive(); // Iniciar o sistema de ping-pong aqui
-                        setStatusOnlie({ loading: false, text: "" });
-
-                        newWs.send("view board");
-                    };
-
-                    newWs.onerror = (error) => {
-                        console.error('WebSocket Error:', error);
-                        setStatusOnlie({ loading: true, text: "Erro ao carregar tabuleiro, aguarde" });
-                        setTimeout(connectionMatch, 3000); // Tentar reconectar após 3 segundos
-
-                        newWs.send("view board");
-                    };
-
-                    newWs.onclose = () => {
-                        console.log('Disconnected from WebSocket server');
-                        setStatusOnlie({ loading: true, text: "Conexão fraca, aguarde" });
-                        setTimeout(connectionMatch, 3000); // Tentar reconectar após 3 segundos
-
-                        newWs.send("view board");
-                    };
-
-                    onMessage(newWs);
-
-                    setWs(newWs);
-
-                } catch (e) {
-                    console.error("Erro ao conectar no servidor, ", e)
-                }
-
-            } else if (ws) {
-
-                onMessage(ws)
-
-            }
-        }
-
-        // respota PONG com o websockets
-        function keepAlive() {
-            if (ws) {
-                ws.send('ping');
-                setTimeout(keepAlive, 3000); // Enviar ping a cada 30 segundos
-            }
-        }
 
         keepAlive();
         connectionMatch();
@@ -203,12 +167,91 @@ function Home() {
     })
 
     useEffect(() => {
-        
-        if (!playerVictory.open && turnPlayer && match === "single_player" ) {
+
+        const photoLocalStorage = localStorage.getItem("photo_user");
+
+        if (photoLocalStorage) {
+            const photoJson = JSON.parse(photoLocalStorage);
+
+            setPhoto(photoJson.photo)
+        }
+
+    }, []);
+
+    useEffect(() => {
+
+        if (!playerVictory.open && turnPlayer && match === "single_player") {
             machineMove();
         }
 
     }, [turnPlayer])
+
+    // estabelece uma coneção com o websockets
+    async function connectionMatch() {
+
+        if (match === "online" && !ws) {
+            try {
+                const ticket = (await axios.post(`${baseUrl}/ticket/${idMatch}`)).data.ticket;
+
+                const newWs = new WebSocket("ws://localhost:8080/match?server=" + idMatch + "&ticket=" + ticket);
+
+                newWs.onopen = () => {
+                    console.log('Connected to WebSocket server');
+                    keepAlive(); // Iniciar o sistema de ping-pong aqui
+                    setStatusOnlie({ loading: false, text: "" });
+
+                    newWs.send("view board");
+                };
+
+                newWs.onerror = (error) => {
+
+                    console.log();
+
+                    console.error('WebSocket Error:', error);
+                    setStatusOnlie({ loading: true, text: "Erro ao carregar tabuleiro, aguarde" });
+                    setTimeout(() => {
+                        connectionMatch();
+                        newWs.send("view board");
+                    }, 1000); // Tentar reconectar após 1 segundos
+
+                    newWs.send("view board");
+                };
+
+                newWs.onclose = () => {
+                    console.log('Disconnected from WebSocket server');
+                    setStatusOnlie({ loading: true, text: "Conexão fraca, aguarde" });
+
+                    // setTimeout(() => {
+                    //     connectionMatch();
+                    //     newWs.send("view board");
+                    // }, 1000); // Tentar reconectar após 1 segundos
+
+                    cleanWs();
+
+                };
+
+                onMessage(newWs);
+
+                setWs(newWs);
+
+            } catch (e) {
+                console.error("Erro ao conectar no servidor, ", e)
+            }
+
+        } else if (ws) {
+
+            onMessage(ws)
+
+        }
+    }
+
+    // respota PONG com o websockets
+    function keepAlive() {
+        if (ws) {
+            ws.send('ping');
+            setTimeout(keepAlive, 3000); // Enviar ping a cada 30 segundos
+        }
+    }
 
     async function handleMovePlayer(row: "row_1" | "row_2" | "row_3", index: number) {
 
@@ -389,7 +432,7 @@ function Home() {
         switch (row) {
             case "row_1": {
                 if (board.row_1[index] !== "NO_PLAYER") return;
-                
+
                 board.row_1[index] = turnPlayer ? "PLAYER_ONE" : "PLAYER_TWO";
 
                 break;
@@ -486,8 +529,8 @@ function Home() {
         navigate("/", { replace: true });
     }
 
-    function onMessage(ws: WebSocket) {
-        ws.onmessage = async function (event: MessageEvent) {
+    function onMessage(currentWs: WebSocket) {
+        currentWs.onmessage = async function (event: MessageEvent) {
 
             try {
                 let data: string | { board: IBoardWS, PlayerSTurn: string };
@@ -503,7 +546,7 @@ function Home() {
                 if (typeof data === 'string' && data.toLowerCase() === 'ping') {
                     // Enviar pong como resposta ao ping
                     console.log("ping")
-                    ws.send('pong');
+                    currentWs.send('pong');
                     return;
                 }
 
@@ -511,12 +554,26 @@ function Home() {
                     return;
                 }
 
+                if (typeof data === 'string' && data.toLowerCase() === "match was ended") {
+                    connectionMatch();
+                }
+
                 if (typeof data === 'string' && data.toLowerCase() === "close match") {
 
-                    ws.close();
+                    alert("caramba a gente está aqui")
+
+                    toast.dismiss();
+                    toast.warn("Partida fechada", { autoClose: 1500 });
+
+                    currentWs.close();
+
+                    if (ws) ws.close();
+                    
                     navigate("/menu_match_online", {
                         replace: true
                     });
+
+                    cleanWs();
 
                     return;
                 }
@@ -544,6 +601,15 @@ function Home() {
                 console.error("Error parsing message:", error);
             }
         };
+    }
+
+    function cleanWs() {
+        if (ws) {
+            ws.close();
+        }
+        
+        setWs(null);
+        setBoard(initialBoard)
     }
 
     function closeOnline() {
@@ -580,6 +646,13 @@ function Home() {
                 <>
                     <h1>{statusOnlie.text}...</h1>
                 </>)}
+
+            {match !== "online" && (
+                <Styled.Header>
+                    <img onClick={() => navigate("/info_user", { replace: true })} src={photo ? photo : imgNoUser} alt="foto do usuario" />
+                </Styled.Header>
+
+            )}
 
             <Styled.ContainerBoard>
 

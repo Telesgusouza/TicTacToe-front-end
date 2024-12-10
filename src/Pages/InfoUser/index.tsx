@@ -31,6 +31,11 @@ function InfoUser() {
                 const jsonToken = localStorage.getItem("token");
 
                 if (jsonToken) {
+
+                    console.log();
+                    console.log("beleza estamos aqui");
+                    console.log();
+
                     const token = JSON.parse(jsonToken);
 
                     const requestData = await axios.get(baseUrl + "/user", {
@@ -48,6 +53,14 @@ function InfoUser() {
 
                     setLoadingData(false);
 
+                } else {
+                    toast.dismiss();
+                    toast.error("Não a um token salvo", { autoClose: 3800 })
+                    toast.warn("Você será redirecionado para o login", { autoClose: 3800 });
+
+                    setTimeout(() => {
+                        navigate("/login", { replace: true });
+                    }, 4000);
                 }
 
             } catch (error) {
@@ -62,6 +75,8 @@ function InfoUser() {
         }
 
         getInfoUser();
+
+        return () => {};
 
     }, [])
 

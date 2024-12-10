@@ -36,6 +36,20 @@ function MenuOnline() {
             setPhoto(photoJson.photo)
         }
 
+        const jsonToken = localStorage.getItem("token");
+
+        if (!jsonToken) {
+            
+            toast.dismiss
+            toast.warn("Seu token não esta presenta no cache", { autoClose: 3400});
+            toast.warn("você será redirecionado para o menu", { autoClose: 3400 });
+
+            setTimeout(() => {
+                navigate("/", { replace: true });                
+            }, 3500);
+
+        };
+
     }, []);
 
     useEffect(() => {
@@ -113,10 +127,10 @@ function MenuOnline() {
                             const matchData = JSON.parse(message.substring(13));
                             console.log('Partida encontrada: ', matchData);
                             // Lógica para iniciar a partida
-                        } 
-                        
+                        }
+
                         else if (message === 'ping') {
-                            
+
                             const currentTime = Date.now();
                             newWs.send(`pong:${currentTime}`);
 
