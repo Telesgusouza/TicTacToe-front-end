@@ -110,6 +110,7 @@ function MenuOnline() {
                         console.log("Conexão encerrada")
 
                         setLoadingMatch(false);
+                        setWs(null);
                     };
 
                     if (closeQueue) {
@@ -118,6 +119,7 @@ function MenuOnline() {
 
                         setCloseQueue(false);
                         setLoadingMatch(false);
+                        setWs(null);
                     }
 
                     newWs.onmessage = function (event) {
@@ -167,6 +169,8 @@ function MenuOnline() {
 
                     newWs.onerror = function (error) {
                         console.log("Error capturado no websockets > ", error);
+                        setWs(null);
+                        setLoadingMatch(false);
                     }
 
                 } catch (e) {
@@ -188,6 +192,7 @@ function MenuOnline() {
         if (currentWs) {
             currentWs.close();
             setLoadingMatch(false);
+            setWs(null);
         }
     }
 

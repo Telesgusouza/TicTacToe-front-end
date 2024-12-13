@@ -53,15 +53,11 @@ function Home() {
     const [pauseMatch, setPauseMatch] = useState<boolean>(false);
     const [adversaryPhoto, setAdversaryPhoto] = useState<string | null>(null);
     const [infoAdversaryToggle, setInfoAdversaryToggle] = useState<boolean>(false);
+    const [matchClosed, setMatchClosed] = useState(false);
 
     const { match, idMatch } = useParams();
 
     const navigate = useNavigate();
-
-    /*
-    
-    
-    */
 
     useEffect(() => {
 
@@ -138,11 +134,16 @@ function Home() {
     useEffect(() => {
         return () => {
             if (ws) {
-                ws.close();
-                setWs(null);
+                // ws.close();
+                // setWs(null);
+                cleanWs();
             }
         };
     }, []);
+
+    // useEffect(() => {
+    //     return () => {};
+    // }, []);
 
     useEffect(() => {
 
@@ -156,7 +157,7 @@ function Home() {
             const getBoard = () => {
                 console.log("Atualizando board...");
                 ws?.send("view board");
-                ws?.send("standing game");
+                // ws?.send("standing game");
             };
 
             const intervalId = setInterval(getBoard, 6000);
@@ -197,8 +198,9 @@ function Home() {
 
                 newWs.onopen = () => {
                     console.log('Connected to WebSocket server');
-                    keepAlive(); // Iniciar o sistema de ping-pong aqui
+                    keepAlive();
                     setStatusOnlie({ loading: false, text: "" });
+                    setMatchClosed(false); // Limpe a flag aqui
 
                     newWs.send("view board");
                 };
@@ -221,12 +223,12 @@ function Home() {
                     console.log('Disconnected from WebSocket server');
                     setStatusOnlie({ loading: true, text: "Conexão fraca, aguarde" });
 
-                    // setTimeout(() => {
-                    //     connectionMatch();
-                    //     newWs.send("view board");
-                    // }, 1000); // Tentar reconectar após 1 segundos
+                    setTimeout(() => {
+                        connectionMatch();
+                        newWs.send("view board");
+                    }, 1000); // Tentar reconectar após 1 segundos
 
-                    cleanWs();
+                    // cleanWs();
 
                 };
 
@@ -555,25 +557,27 @@ function Home() {
                 }
 
                 if (typeof data === 'string' && data.toLowerCase() === "match was ended") {
+
                     connectionMatch();
+
                 }
 
                 if (typeof data === 'string' && data.toLowerCase() === "close match") {
 
-                    alert("caramba a gente está aqui")
-
                     toast.dismiss();
                     toast.warn("Partida fechada", { autoClose: 1500 });
 
-                    currentWs.close();
+                    // currentWs.close();
+                    ws?.close();
 
-                    if (ws) ws.close();
-                    
                     navigate("/menu_match_online", {
                         replace: true
                     });
 
-                    cleanWs();
+                    // cleanWs();
+                    setWs(null);
+
+                    // setMatchClosed(true);
 
                     return;
                 }
@@ -605,16 +609,29 @@ function Home() {
 
     function cleanWs() {
         if (ws) {
-            ws.close();
+            // ws.send("match closed");
+            // ws.close();
         }
-        
+
         setWs(null);
-        setBoard(initialBoard)
+        setBoard(initialBoard);
+        // setMatchClosed(false); // Adicione esta linha
     }
 
     function closeOnline() {
         if (ws) {
-            ws?.send("close match");
+            ws.send("close match");
+
+            // setMatchClosed(true);
+            // ws.close()
+
+
+            // cleanWs();
+
+            // navigate("/menu_match_online", {
+            //     replace: true
+            // });
+
         }
     }
 
