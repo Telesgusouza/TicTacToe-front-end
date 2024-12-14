@@ -32,10 +32,6 @@ function InfoUser() {
 
                 if (jsonToken) {
 
-                    console.log();
-                    console.log("beleza estamos aqui");
-                    console.log();
-
                     const token = JSON.parse(jsonToken);
 
                     const requestData = await axios.get(baseUrl + "/user", {

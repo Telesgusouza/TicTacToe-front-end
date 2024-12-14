@@ -141,9 +141,9 @@ function Home() {
         };
     }, []);
 
-    // useEffect(() => {
-    //     return () => {};
-    // }, []);
+    useEffect(() => {
+        return () => {};
+    }, []);
 
     useEffect(() => {
 
@@ -157,7 +157,6 @@ function Home() {
             const getBoard = () => {
                 console.log("Atualizando board...");
                 ws?.send("view board");
-                // ws?.send("standing game");
             };
 
             const intervalId = setInterval(getBoard, 6000);
