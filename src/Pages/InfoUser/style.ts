@@ -124,7 +124,7 @@ export const Back = styled.div`
 
     margin-bottom: 15px;
 
-    span {
+    p {
         position: relative;
 
         padding: 2px 6px;

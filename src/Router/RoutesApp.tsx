@@ -22,13 +22,6 @@ function RoutesApp() {
                     <Route path="/register" element={<Register />} />
                     <Route path="/login" element={<Login />} />
 
-                    {/* <Route path="/home/:match" element={<Home />} />
-                    <Route path="/home/:match/:idMatch" element={ <Home /> } />
-                    <Route path="/menu_match_online" element={ <MenuOnline /> } />
-
-                    <Route path="/info_user/:page" element={<InfoUser /> } />
-                    <Route path="/info_user" element={<InfoUser /> } /> */}
-
                     <Route path="/home/:match" element={<RedirectRouter> <Home /> </RedirectRouter>} />
                     <Route path="/home/:match/:idMatch" element={<RedirectRouter> <Home /> </RedirectRouter>} />
                     <Route path="/menu_match_online" element={<RedirectRouter> <MenuOnline /> </RedirectRouter>} />

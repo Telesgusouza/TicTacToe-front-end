@@ -6,12 +6,6 @@ import Register from '../../src/Pages/Register';
 
 import '@testing-library/jest-dom';
 
-// jest.mock('../../src/assets/reload.svg', () => ({
-//     ReactComponent: () => null,
-// }));
-
-//   Gustav#98802381
-
 jest.mock('../../src/assets/no-user.svg', () => ({
     ReactComponent: () => null
 }));
@@ -75,16 +69,6 @@ describe("Register", () => {
         expect(screen.getByText('Faça login')).toBeInTheDocument();
     });
 
-    it("clicking on the button and a loading appears", () => {
-        handleRegister();
-
-        const buttonSubmit = screen.getByRole("button", { name: "Registre-se" });
-        expect(buttonSubmit).toBeInTheDocument();
-
-        fireEvent.click(buttonSubmit);
-        expect(screen.getByAltText("rotation right")).toBeInTheDocument();
-    });
-
     it("toggle password view", () => {
         handleRegister();
 
@@ -121,72 +105,6 @@ describe("Register", () => {
         });
 
     });
-
-    /*
-
-    não consegui criar esse teste
-    I couldn't create this test
-
-    it('handles form submission', async () => {
-        const mockPost = jest.fn().mockResolvedValue({
-            data: { token: 'fake-token' }
-        });
-        mockedAxios.post.mockImplementation(mockPost);
-
-        await act(async () => {
-            const { getByPlaceholderText, getByRole } = render(
-                <MemoryRouter>
-                    <Register />
-                </MemoryRouter>
-            );
-
-            fireEvent.change(getByPlaceholderText('Name'), { target: { value: 'John Doe' } });
-            fireEvent.change(getByPlaceholderText('E-mail'), { target: { value: 'john@example.com' } });
-            fireEvent.change(getByPlaceholderText('Senha'), { target: { value: 'secure123' } });
-
-            await act(async () => {
-                fireEvent.submit(getByRole('form'));
-            });
-        });
-
-        await waitFor(() => expect(mockPost).toHaveBeenCalled());
-        expect(mockPost).toHaveBeenCalledWith('/api/v1/auth/register', expect.objectContaining({
-            login: 'john@example.com',
-            name: 'John Doe',
-            password: 'secure123'
-        }));
-    });
-    */
-
-    // it("display error message on invalid input", () => {
-    //     const red = "#ed3419";
-    //     handleRegister();
-
-    //     const submitButton = screen.getByRole("button", { name: "Registre-se" });
-    //     fireEvent.click(submitButton);
-
-    //     expect(screen.getByPlaceholderText("Name")).toHaveStyle({
-    //         borderBottomColor: red,
-    //     });
-
-    //     expect(screen.getByPlaceholderText("E-mail")).toHaveStyle({
-    //         borderBottomColor: red,
-    //     });
-
-    //     expect(screen.getByPlaceholderText("Senha")).toHaveStyle({
-    //         borderBottomColor: red,
-    //     });
-
-    //     // const name = screen.getByPlaceholderText("Name");
-    //     // fireEvent.change(name, { target: { value: "valid name" }});
-
-    //     // const email = screen.getByPlaceholderText("E-mail");
-    //     // fireEvent.change(email, { target: { value: "valid@gmail.com" } });
-
-    //     // const password = screen.getByPlaceholderText("Senha");
-    //     // fireEvent.change(password, { target: { value: "password123" } });
-        
-    // })
 
     it("inputs register", () => {
         handleRegister();

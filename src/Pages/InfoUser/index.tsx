@@ -72,7 +72,7 @@ function InfoUser() {
 
         getInfoUser();
 
-        return () => {};
+        return () => { };
 
     }, [])
 
@@ -86,8 +86,8 @@ function InfoUser() {
 
         if (matchDataShow && infoUser && startingData === null) {
 
-            if (infoUser.numberOfWins === 0 && infoUser.numberOfDraws === 0 && infoUser.numberOfDefeats === 0 ) {
-            
+            if (infoUser.numberOfWins === 0 && infoUser.numberOfDraws === 0 && infoUser.numberOfDefeats === 0) {
+
                 const data: IStartingData = {
                     defeats: "0",
                     draws: "0",
@@ -139,16 +139,16 @@ function InfoUser() {
         <Styled.Container loading={loadingData ? "loading" : "no_loading"} >
 
             <Styled.Back>
-                <span onClick={handleBackNavigate} >
+                <p onClick={handleBackNavigate} id='back-button' >
                     Voltar
-                </span>
+                </p>
             </Styled.Back>
 
-            <Styled.Loading loading={loadingData ? "loading" : "no_loading"} />
+            <Styled.Loading loading={loadingData ? "loading" : "no_loading"} id='loading' />
 
             <section>
                 <label htmlFor="name">
-                    <span>Nome</span>
+                    <span id='name'>Nome</span>
                     <p>{infoUser?.name}</p>
                 </label>
 

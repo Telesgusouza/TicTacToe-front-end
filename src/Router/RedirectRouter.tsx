@@ -39,7 +39,6 @@ export default function RedirectRouter({ children }: IProps) {
                 }
 
             } else {
-                alert("CHEGA AQUI");
                 verifyUser(jsonToken);
 
             };
