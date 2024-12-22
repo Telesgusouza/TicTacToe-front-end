@@ -1,6 +1,7 @@
 // redux
 export interface IRootReducer {
-    UserReducer: IStateUser
+    UserReducer: IStateUser;
+    SoundtrackReducer: IStateSondtrack;
 }
 
 export interface IStateUser {
@@ -9,7 +10,7 @@ export interface IStateUser {
 
 export interface IActionUser {
     type: string,
-    payload: { user: IUser}
+    payload: { user: IUser }
 }
 
 // outros
@@ -38,10 +39,10 @@ export interface IMatch {
     id: string,
 
     matchCreationDate: string,
-    
+
     idPlayerOne: string,
     idPlayerTwo: string,
-    
+
     numberOfWinsPlayerOne: number,
     numberOfWinsPlayerTwo: number,
     numberOfMatches: number
@@ -79,4 +80,23 @@ export interface errorAxios {
     error: string,
     message: string,
     path: string
-} 
+}
+
+
+// soundtrack
+export interface IActionSoundtrack {
+    type: string,
+    // payload: { soundtrack: ISoundtrack}
+    payload: number;
+    payloadIsPlaying: boolean
+}
+
+export interface IStateSondtrack {
+    soundtrack: ISoundtrack
+}
+
+export interface ISoundtrack {
+    isPlaying: boolean;
+    audio: HTMLAudioElement | null;
+    volume: number;
+}

@@ -12,6 +12,14 @@ export const Container = styled.div`
     }
 `;
 
+export const ContainerAudio = styled.div`
+    width: 100%;
+    max-width: 400px;
+
+    margin: 18px auto 0 auto;
+    
+`;
+
 export const Header = styled.header`
     display: flex;
     justify-content: right;
@@ -92,6 +100,7 @@ export const Section = styled.section`
         width: 100%;
         margin-bottom: 15px;
     }
+
 
     @media (max-width: 450px) {
         padding: 30px 15px 20px 15px;

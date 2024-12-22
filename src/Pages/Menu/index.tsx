@@ -1,16 +1,21 @@
 import { useNavigate } from 'react-router-dom';
 import Button from '../../Components/Button';
 import * as Styled from './style';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import baseUrl from '../../Config/baseUrl';
 import { IUser } from '../../Config/interfaces';
 
+// import ReactAudioPlayer from 'react-audio-player';
+
+
+import ambientMusic from '../../assets/songs/default_calm.mp3';
+
+import { Audio } from '../../Components/Audio';
+
 function Menu() {
 
     const [logged, setLogged] = useState<boolean>(false);
-
-    const navigation = useNavigate();
 
     useEffect(() => {
 
@@ -117,9 +122,16 @@ function Menu() {
                             onClick={() => handleNavigation("home/single_player")}
                         >CONTRA A MAQUINA</Button>
                     </li>
+
                 </ul>
 
             </Styled.Section>
+
+            <Styled.ContainerAudio>
+
+                <Audio music={ambientMusic} />
+
+            </Styled.ContainerAudio>
 
         </Styled.Container>
     )

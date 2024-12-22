@@ -134,15 +134,13 @@ function Home() {
     useEffect(() => {
         return () => {
             if (ws) {
-                // ws.close();
-                // setWs(null);
                 cleanWs();
             }
         };
     }, []);
 
     useEffect(() => {
-        return () => {};
+        return () => { };
     }, []);
 
     useEffect(() => {
@@ -677,7 +675,7 @@ function Home() {
                     {match !== "online" ? (
                         <>
                             <Styled.Logo>
-                                <img src={logoImg} alt="icon logo" onClick={navigateHome} />
+                                <img src={logoImg} alt="logo do site" onClick={navigateHome} />
                             </Styled.Logo>
                         </>
                     ) : (
@@ -685,7 +683,7 @@ function Home() {
                             <Styled.Logo>
                                 <img
                                     src={player?.player === "PLAYER_ONE" ? iconO : iconX}
-                                    alt="icon logo"
+                                    alt="icone das peças"
                                     onClick={closeOnline} />
                             </Styled.Logo>
 
@@ -719,7 +717,7 @@ function Home() {
                             >
                                 <Button btn='BUTTON_SILVER' option={"small"} onClick={realodMatch} >
 
-                                    <img src={iconRestart} alt="" />
+                                    <img src={iconRestart} alt="icone de restart" />
 
                                 </Button>
 
@@ -766,14 +764,14 @@ function Home() {
                                     {field === "NO_PLAYER" ? (
                                         <>
                                             {turnPlayer ?
-                                                <img src={iconOEmptyField} alt="" /> :
-                                                <img src={iconXEmptyField} alt="" />}
+                                                <img src={iconOEmptyField} alt="icone O ausente" /> :
+                                                <img src={iconXEmptyField} alt="icone X ausente" />}
                                         </>
                                     ) : (
                                         <>
                                             {field === "PLAYER_ONE" ?
-                                                <img src={iconO} alt="" /> :
-                                                <img src={iconX} alt="" />}
+                                                <img src={iconO} alt="icone O" /> :
+                                                <img src={iconX} alt="icone X" />}
                                         </>)}
                                 </Styled.Field>
                             </Reveal>
@@ -793,14 +791,14 @@ function Home() {
                                     {field === "NO_PLAYER" ? (
                                         <>
                                             {turnPlayer ?
-                                                <img src={iconOEmptyField} alt="" /> :
-                                                <img src={iconXEmptyField} alt="" />}
+                                                <img src={iconOEmptyField} alt="icone O ausente" /> :
+                                                <img src={iconXEmptyField} alt="icone X ausente" />}
                                         </>
                                     ) : (
                                         <>
                                             {field === "PLAYER_ONE" ?
-                                                <img src={iconO} alt="" /> :
-                                                <img src={iconX} alt="" />}
+                                                <img src={iconO} alt="icone O" /> :
+                                                <img src={iconX} alt="icone X" />}
                                         </>)}
                                 </Styled.Field>
                             </Reveal>
@@ -821,14 +819,14 @@ function Home() {
                                     {field === "NO_PLAYER" ? (
                                         <>
                                             {turnPlayer ?
-                                                <img src={iconOEmptyField} alt="" /> :
-                                                <img src={iconXEmptyField} alt="" />}
+                                                <img src={iconOEmptyField} alt="icone O ausente" /> :
+                                                <img src={iconXEmptyField} alt="icone X ausente" />}
                                         </>
                                     ) : (
                                         <>
                                             {field === "PLAYER_ONE" ?
-                                                <img src={iconO} alt="" /> :
-                                                <img src={iconX} alt="" />}
+                                                <img src={iconO} alt="icone O" /> :
+                                                <img src={iconX} alt="icone X" />}
                                         </>)}
                                 </Styled.Field>
                             </Reveal>

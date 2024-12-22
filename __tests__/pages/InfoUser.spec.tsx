@@ -2,10 +2,11 @@ import React, { act } from "react";
 import "@testing-library/dom"
 import "@testing-library/jest-dom";
 
-import { BrowserRouter, Route, Router, Routes, useNavigate } from "react-router-dom";
+import { BrowserRouter, replace, Route, Router, Routes, useNavigate } from "react-router-dom";
 import { createMemoryHistory } from 'history';
 
 import InfoUser from '../../src/Pages/InfoUser/index';
+import RoutesApp from '../../src/Router/RoutesApp';
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 // /__tests__/pages/InfoUser.spec.tsx
@@ -36,14 +37,6 @@ function handleInfoUser() {
         </BrowserRouter>
     );
 }
-
-// function handleInfoUser() {
-//     render(
-//         <BrowserRouter>
-//             <InfoUser />
-//         </BrowserRouter>
-//     )
-// }
 
 describe("InfoUser", () => {
 
