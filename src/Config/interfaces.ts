@@ -1,7 +1,6 @@
 // redux
 export interface IRootReducer {
     UserReducer: IStateUser;
-    SoundtrackReducer: IStateSondtrack;
 }
 
 export interface IStateUser {
@@ -82,21 +81,3 @@ export interface errorAxios {
     path: string
 }
 
-
-// soundtrack
-export interface IActionSoundtrack {
-    type: string,
-    // payload: { soundtrack: ISoundtrack}
-    payload: number;
-    payloadIsPlaying: boolean
-}
-
-export interface IStateSondtrack {
-    soundtrack: ISoundtrack
-}
-
-export interface ISoundtrack {
-    isPlaying: boolean;
-    audio: HTMLAudioElement | null;
-    volume: number;
-}

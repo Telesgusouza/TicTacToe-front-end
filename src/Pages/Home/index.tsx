@@ -20,10 +20,14 @@ import iconO from "../../assets/icon-o.svg";
 import iconXEmptyField from "../../assets/icon-x-outline.svg";
 import iconOEmptyField from "../../assets/icon-o-outline.svg";
 
+import boardMusic from '../../assets/songs/board1.mp3';
+
 import ModalVictoryMatch from "../../Components/ModalVictoryMatch";
 import Reveal from "../../Components/Reveal";
 import baseUrl from "../../Config/baseUrl";
 import InfoAdversary from "../../Components/InfoAdversary";
+
+import { Audio } from "../../Components/Audio";
 
 interface IStatusOnline {
     loading: boolean;
@@ -524,9 +528,9 @@ function Home() {
         setBoard(initialBoard);
     }
 
-    function navigateHome() {
-        navigate("/", { replace: true });
-    }
+    // function navigateHome() {
+    //     navigate("/", { replace: true });
+    // }
 
     function onMessage(currentWs: WebSocket) {
         currentWs.onmessage = async function (event: MessageEvent) {
@@ -636,9 +640,26 @@ function Home() {
         setInfoAdversaryToggle(false);
     }
 
+    function navigatePage(url: string) {
+
+        if (url === "/info_user") {
+            const jsonToken = localStorage.getItem("token");
+            
+            if (jsonToken) {
+                navigate(url, { replace: true });
+            } else {
+                toast.warn("Não foi encontrado um token", { autoClose: 1200 })
+                return;
+            }
+        }
+
+        navigate(url, { replace: true });
+    }
+
     return (
         <Styled.Container>
 
+            {/* <Styled.HeaderContent> */}
 
             {match === "online" && infoAdversaryToggle && infoMatch && player && (
                 <>
@@ -661,21 +682,38 @@ function Home() {
                     <h1>{statusOnlie.text}...</h1>
                 </>)}
 
-            {match !== "online" && (
-                <Styled.Header>
-                    <img onClick={() => navigate("/info_user", { replace: true })} src={photo ? photo : imgNoUser} alt="foto do usuario" />
-                </Styled.Header>
+            {/* {match !== "online" && (
+                    <Styled.Header>
+                        <img onClick={() => navigate("/info_user", { replace: true })} src={photo ? photo : imgNoUser} alt="foto do usuario" />
+                    </Styled.Header>
 
-            )}
+                )} */}
 
+            <Styled.Header>
+
+                <Audio music={boardMusic} />
+
+                {match !== "online" && (
+
+                    // <img onClick={() => navigate("/info_user", { replace: true })} src={photo ? photo : imgNoUser} alt="foto do usuario" />
+                    <Styled.ImgUser onClick={() => navigatePage("/info_user")} src={photo ? photo : imgNoUser} alt="foto do usuario" />
+
+                )}
+
+
+
+                {/* </Styled.HeaderContent> */}
+            </Styled.Header>
             <Styled.ContainerBoard>
+
+
 
                 <Styled.OptionMatch>
 
                     {match !== "online" ? (
                         <>
                             <Styled.Logo>
-                                <img src={logoImg} alt="logo do site" onClick={navigateHome} />
+                                <img src={logoImg} alt="logo do site" onClick={() => navigatePage("/")} />
                             </Styled.Logo>
                         </>
                     ) : (

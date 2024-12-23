@@ -1,11 +1,15 @@
 import styled from "styled-components";
 
+interface IProps {
+    popup: string
+}
 
-export const Container = styled.div`
+export const Container = styled.div<IProps>`
     position: relative;
 
     &::after {
-        content: "Deixar ativa trilha sonora";
+        /* content: "Deixar ativa trilha sonora"; */
+        content: ${props => props.popup};
         position: absolute;
         top: calc(100% + 12px);
         left: 0;

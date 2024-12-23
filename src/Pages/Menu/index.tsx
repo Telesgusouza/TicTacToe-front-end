@@ -16,6 +16,7 @@ import { Audio } from '../../Components/Audio';
 function Menu() {
 
     const [logged, setLogged] = useState<boolean>(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
 
@@ -72,7 +73,7 @@ function Menu() {
 
         if (url === "home/online" && !logged) return;
 
-        navigation("/" + url, { replace: true });
+        navigate("/" + url, { replace: true });
     }
 
     return (
@@ -130,6 +131,7 @@ function Menu() {
             <Styled.ContainerAudio>
 
                 <Audio music={ambientMusic} />
+
 
             </Styled.ContainerAudio>
 

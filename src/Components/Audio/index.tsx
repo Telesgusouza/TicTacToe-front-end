@@ -1,12 +1,8 @@
-
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as Styled from './style';
 
 import imgPlay from '../../assets/play.svg';
 import imgPause from '../../assets/pause.svg';
-import { useDispatch, useSelector } from 'react-redux';
-import { IRootReducer } from '../../Config/interfaces';
-import ActionTypes from '../../Config/ActionTypes';
 
 interface IProps {
   music: string;
@@ -14,11 +10,17 @@ interface IProps {
 
 export function Audio({ music }: IProps) {
 
+  const [volume, setVolume] = useState(.40);
+
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  // const { soundtrack } = useSelector((rootReducer: IRootReducer) => rootReducer.SoundtrackReducer);
-  const dispatch = useDispatch();
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = 0.4;
+      setIsPlaying(true);
+    }
+  }, []);
 
   function togglePlay() {
 
@@ -26,7 +28,12 @@ export function Audio({ music }: IProps) {
       if (isPlaying) {
         audioRef.current.pause();
       } else {
-        audioRef.current.play();
+        audioRef.current.volume = 0.4;
+
+        setTimeout(() => {
+          audioRef.current?.play();
+
+        }, 500);
       }
       setIsPlaying(!isPlaying);
     }
@@ -35,6 +42,7 @@ export function Audio({ music }: IProps) {
 
   function handleVolumeChange(e: React.ChangeEvent<HTMLInputElement>) {
     const newVolume = parseFloat(e.target.value);
+    setVolume(newVolume);
 
     if (audioRef.current) {
       audioRef.current.volume = newVolume;
@@ -42,16 +50,18 @@ export function Audio({ music }: IProps) {
   };
 
   return (
-    <Styled.Container>
+    <Styled.Container popup={isPlaying ? "desligar" : "ligar"} >
 
       <Styled.ContainerContent>
 
         <audio
           ref={audioRef}
+
           src={music}
           loop
           controls
           autoPlay
+          defaultValue={.01}
         />
 
         <button onClick={togglePlay}>
@@ -63,7 +73,7 @@ export function Audio({ music }: IProps) {
           min="0"
           max="1"
           step="0.01"
-          value={audioRef.current?.volume}
+          value={volume}
           onChange={handleVolumeChange}
         />
 

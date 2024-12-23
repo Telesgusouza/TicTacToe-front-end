@@ -7,6 +7,8 @@ const initialState: IStateUser = {
         login: "",
         role: "",
 
+        player: "",
+
         numberOfWins: 0,
         numberOfDefeats: 0,
         numberOfDraws: 0,

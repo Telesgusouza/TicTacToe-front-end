@@ -6,6 +6,10 @@ import { toast } from 'react-toastify';
 import { useNavigate, useParams } from 'react-router-dom';
 import { IUser } from '../../Config/interfaces';
 
+import ambientMusic from '../../assets/songs/default_calm.mp3';
+import { Audio } from '../../Components/Audio';
+import DeleteFromAccount from '../../Components/DeleteFromAccount';
+
 interface IStartingData {
     wins: string;
     draws: string;
@@ -17,6 +21,8 @@ function InfoUser() {
     const [infoUser, setInfoUser] = useState<IUser | null>(null);
     const [matchDataShow, setMatchDataShow] = useState<boolean>(false);
     const [startingData, setStartingData] = useState<IStartingData | null>(null);
+
+    const [toggleDeleteFromAccount, setToggleDeleteFromAccount] = useState<boolean>(false);
 
     const [loadingData, setLoadingData] = useState<boolean>(true);
 
@@ -40,7 +46,6 @@ function InfoUser() {
                         }
                     });
 
-                    console.log(requestData.data)
                     const data: IUser = requestData.data;
 
                     setInfoUser(data);
@@ -135,8 +140,31 @@ function InfoUser() {
 
     }
 
+    function viewPopUpDeleteFromAccount() {
+        setToggleDeleteFromAccount(!toggleDeleteFromAccount);
+    }
+
+    function LogOutOfAccount() {
+
+        localStorage.removeItem("photo_user");
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+
+        toast.warn("Saindo da conta", { autoClose: 2000 });
+        setTimeout(() => {
+            navigate("/", { replace: true });
+        }, 2000);
+    }
+
     return (
         <Styled.Container loading={loadingData ? "loading" : "no_loading"} >
+
+            {toggleDeleteFromAccount && (
+                <>
+                    <DeleteFromAccount onClick={viewPopUpDeleteFromAccount} />
+                </>
+            )}
+
 
             <Styled.Back>
                 <p onClick={handleBackNavigate} id='back-button' >
@@ -180,7 +208,24 @@ function InfoUser() {
 
                 </Styled.StartingData>
 
+
+                <Styled.ContainerButton>
+                    <button onClick={LogOutOfAccount} >
+                        Sair da conta
+                    </button>
+
+                    <button onClick={viewPopUpDeleteFromAccount} >
+                        Deletar conta
+                    </button>
+
+                </Styled.ContainerButton>
+
             </section>
+
+            <Styled.ContentMusic>
+                <Audio music={ambientMusic} />
+            </Styled.ContentMusic>
+
         </Styled.Container>
     );
 }

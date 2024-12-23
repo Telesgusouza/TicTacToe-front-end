@@ -18,12 +18,14 @@ export const Header = styled.header`
     width: 100%;
 
     display: flex;
-    justify-content: end;
+    flex-direction: row;
+    /* justify-content: end; */
+    justify-content: space-between;
     align-items: center;
 
-    padding: 16px 0 10px 0;
+    padding: 18px 0 10px 0;
 
-    img {
+    /* img {
         width: 30px;
         height: 30px;
         object-fit: cover;
@@ -33,8 +35,19 @@ export const Header = styled.header`
         background-color: #f0f0f0;
 
         cursor: pointer;
-    }
+    } */
+`;
 
+export const ImgUser = styled.img`
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+
+    border-radius: 50%;
+
+    background-color: #f0f0f0;
+
+    cursor: pointer;
 `;
 
 export const ContainerBoard = styled.section`

@@ -1,5 +1,4 @@
-import { style } from "framer-motion/client";
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 interface IProps {
     loading?: "loading" | "no_loading";
@@ -125,6 +124,7 @@ export const Back = styled.div`
     margin-bottom: 15px;
 
     p {
+        width: fit-content;
         position: relative;
 
         padding: 2px 6px;
@@ -153,7 +153,6 @@ export const Back = styled.div`
     }
 `;
 
-
 export const Loading = styled.div<IProps>`
     display: ${props => props.loading === "loading" ? "flex" : "none"};
 
@@ -181,4 +180,45 @@ export const Loading = styled.div<IProps>`
     background-image: linear-gradient(45deg, transparent, #c3c3c3, transparent);
     background-size: 400%;
     animation: loading 1s linear infinite;
+`;
+
+export const ContentMusic = styled.div`
+    width: 100%;
+    max-width: 400px;
+
+    margin-top: 18px;
+`;
+
+export const ContainerButton = styled.article`
+
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 16px;
+
+    margin-top: 20px;
+
+    button {
+
+        width: fit-content;
+        padding: 8px 18px;
+
+        border: none;
+        border-radius: 2px;
+
+        background-color: #ce2029;
+
+        font-size: .95rem;
+        font-weight: 500;
+        color: #f0f0f0;
+
+        transition: opacity .1s ease;
+
+        &:hover {
+            opacity: .8;
+        }
+
+        &:nth-child(2) {
+            background-color: #9b111e;
+        }
+    }
 `;
