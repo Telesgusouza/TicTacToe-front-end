@@ -13,7 +13,6 @@ import axios from 'axios';
 import baseUrl from '../../Config/baseUrl';
 import { toast } from 'react-toastify';
 import Reload from '../../Components/Reload';
-// import { findPhotoWithToken } from '../../Config/utils';
 
 function Login() {
     const [email, setEmail] = useState<string>("");
@@ -79,16 +78,21 @@ function Login() {
                     switch (message) {
                         case "Error with passed token. id Authentication failed": {
                             toast.warn("Conta não existe, tente novamente");
+                            setWrongEmail(true);
+                            setWrongPassword(true);
                             break;
                         }
 
                         case "incorrect field. id incorrect password": {
                             toast.warn("Senha incorreta, tentei novamente");
+                            setWrongPassword(true);
                             break;
                         }
 
                         case "incorrect field. id Authentication failed": {
                             toast.warn("Autenticação falhou");
+                            setWrongEmail(true);
+                            setWrongPassword(true);
                             break;
                         }
 
@@ -149,7 +153,10 @@ function Login() {
 
                 </Button>
 
-                <p>Ainda não tem conta? <span onClick={() => handleNavigate("/register")} >Cadastre-se</span></p>
+                <Styled.Links>
+                    <p>Esqueceu sua senha <span onClick={() => handleNavigate("/reset_password")} >Recupere ela aqui</span></p>
+                    <p>Ainda não tem conta? <span onClick={() => handleNavigate("/register")} >Cadastre-se</span></p>
+                </Styled.Links>
 
             </Form>
 

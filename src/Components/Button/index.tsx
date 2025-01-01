@@ -1,7 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import * as Styled from './style';
-
-import musicEffectBtn from "../../assets/songs/song_effect_btn.wav";
 
 interface IProps {
     children: React.ReactNode;
@@ -28,26 +26,7 @@ function Button({
 }
     : IProps
 ) {
-    const audioRef = useRef<HTMLAudioElement>(null);
-
-    useEffect(() => {
-        if(audioRef.current) {
-            audioRef.current.volume = 0.6;
-        }
-    }, [])
-
-    function handleOnClick() {
-
-
-        if (onClick) {
-            setTimeout(() => {
-                onClick();
-            }, 600);
-
-        }
-    }
-
-
+    
     return (
         <Styled.Button
             btn={btn}
@@ -55,19 +34,12 @@ function Button({
 
             borderbottom={borderbottom}
             disabled={disabled === "disabled_button"}
-            onClick={handleOnClick}
+            onClick={onClick}
 
             hoverstyle={hoverstyle}
         >
             {children}
-            <audio
-                ref={audioRef}
-                src={musicEffectBtn}
-                muted={false}
-                controls
-                onPlay={handleOnClick}
-
-            />
+            
         </Styled.Button>
     )
 }

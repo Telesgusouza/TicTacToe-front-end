@@ -26,3 +26,12 @@ export const InputPassword = styled.div`
         cursor: pointer;
     }
 `;
+
+export const Links = styled.div`
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 8px;
+
+    margin-top: 10px;
+
+`;

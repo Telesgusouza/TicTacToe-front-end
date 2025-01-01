@@ -10,7 +10,6 @@ interface IProps {
 
 
 export const Button = styled.button<IProps>`
-    position: relative;
 
     font-weight: 800;
     color: var(--darkNavy);
@@ -88,19 +87,4 @@ export const Button = styled.button<IProps>`
         opacity: .6;
         cursor: not-allowed;
     }
-
-    audio {
-        position: absolute;
-        top: 0;
-        left: 0;
-
-        width: 100%;
-        height: 100%;
-
-        opacity: 0;
-
-        cursor: pointer;
-
-    }
-
 `;

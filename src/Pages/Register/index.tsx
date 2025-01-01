@@ -201,6 +201,18 @@ function Register() {
                         break;
                     }
 
+                    case "account already exists": {
+                        toast.warn("Conta já existe")
+                        setWrongPassword(true);
+                        break;
+                    }
+
+                    case "must have at least 6 characters and less than 50": {
+                        toast.warn("Senha invalida");
+                        setWrongPassword(true);
+                        break;
+                    }
+
                     default: {
                         toast.error("Erro inesperado ao subir arquivo")
                     }

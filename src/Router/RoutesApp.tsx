@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useParams } from "react-router-dom";
 import { Provider } from "react-redux";
 
 import store from "../Config/redux/store";
@@ -10,6 +10,7 @@ import Home from "../Pages/Home";
 import MenuOnline from "../Pages/MenuOnline";
 import InfoUser from "../Pages/InfoUser";
 import RedirectRouter from "./RedirectRouter";
+import ResetPassword from "../Pages/ResetPassword";
 
 function RoutesApp() {
 
@@ -21,6 +22,7 @@ function RoutesApp() {
 
                     <Route path="/register" element={<Register />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path="/reset_password" element={<ResetPassword />} />
 
                     <Route path="/home/:match" element={<RedirectRouter> <Home /> </RedirectRouter>} />
                     <Route path="/home/:match/:idMatch" element={<RedirectRouter> <Home /> </RedirectRouter>} />
@@ -28,6 +30,7 @@ function RoutesApp() {
 
                     <Route path="/info_user/:page" element={<RedirectRouter> <InfoUser /> </RedirectRouter>} />
                     <Route path="/info_user" element={<RedirectRouter> <InfoUser /> </RedirectRouter>} />
+
                 </Routes>
             </BrowserRouter>
         </Provider>
