@@ -41,7 +41,7 @@ export default function ResetPassword() {
         wrong: false
     });
 
-    const [view, setView] = useState<IView>({ view: "RESET_PASSWORD" });
+    const [view, setView] = useState<IView>({ view: "CODE" });
     const [timeLeft, setTimeLeft] = useState<number>(0);
     const [btnDisable, setBtnDisable] = useState<boolean>(false);
 
@@ -88,6 +88,48 @@ export default function ResetPassword() {
     }, [passwordConfirm]);
 
     async function resetPassword() {
+        setBtnDisable(true);
+
+        if (password.value.length < 6) {
+            toast.warn("Senha muito curta", { autoClose: 2000 });
+            setPassword({...password, wrong: true});
+            setBtnDisable(false);
+            return;
+        }
+
+        if(password.value.length > 50) {
+            toast.warn("Senha muito longa", { autoClose: 2000 });
+            setPassword({...password, wrong: true});
+            setBtnDisable(false);
+            return;
+        }
+
+        if (password.value !== passwordConfirm.value) {
+            toast.warn("Senhas diferentes", { autoClose: 2000 });
+            setPasswordConfirm({...passwordConfirm, wrong: true});
+            setBtnDisable(false);
+            return;
+        }
+
+        try {
+
+            await axios.patch(baseUrl + "/auth/pass_password", {
+                email: email,
+                ticket: codeInput,
+                password: password.value
+            });
+
+            toast.success("Senha resetada com sucesso", {autoClose: 2400});
+            toast.warn("Você será redirencionado para a página principal", { autoClose: 2000 });
+
+            setTimeout(() => {
+                navigate("/");
+            }, 2400);
+
+        } catch (error) {
+            console.error("Error ao redefinidir senha: ", error);
+            toast.error("Error ao refefinir senha.", { autoClose: 2400 });
+        }
 
     }
 
@@ -98,6 +140,7 @@ export default function ResetPassword() {
         if (codeInput.length <= 0 || codeInput.length > 6) {
             toast.warn("Código invalido");
             setBtnDisable(true);
+            return;
         }
 
         try {
@@ -270,7 +313,7 @@ export default function ResetPassword() {
 
                         <Button
                             disabled={btnDisable ? "disabled_button" : ""}
-                            btn='BUTTON_BLUE'
+                            btn='BUTTON_SILVER'
                             option='small'
                             onClick={verifyCode}
                         >
@@ -292,7 +335,7 @@ export default function ResetPassword() {
                                 onChange={(e) => setPassword({...password, value: e.target.value})}
                                 value={password.value}
                             />
-                            <img src={imgLockOpen} alt="icone de fechadura aberta" onClick={() => toggleViewPassword("password")} />
+                            <img src={password.type === "password" ? imgLockClose : imgLockOpen} alt="icone de fechadura aberta" onClick={() => toggleViewPassword("password")} />
                         </Styled.InputPassword>
 
                         <Styled.InputPassword>
@@ -305,10 +348,10 @@ export default function ResetPassword() {
                                 value={passwordConfirm.value}
                             />
 
-                            <img src={imgLockClose} alt="icone de fechadura aberta" onClick={() => toggleViewPassword("confirm")} />
+                            <img src={passwordConfirm.type === "password" ? imgLockClose : imgLockOpen} alt="icone de fechadura aberta" onClick={() => toggleViewPassword("confirm")} />
                         </Styled.InputPassword>
 
-                        <Button btn='BUTTON_SILVER' option='small' > Mudar senha </Button>
+                        <Button btn='BUTTON_SILVER' option='small' onClick={resetPassword} > Mudar senha </Button>
                     </>
                 )}
 
