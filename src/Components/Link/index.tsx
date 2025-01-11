@@ -5,13 +5,13 @@ const STATUS = {
   NORMAL: 'normal',
 };
 
-// interface LinkProps {
-//   page: string;
-//   children: React.ReactNode;
-// }
+interface LinkProps {
+  page: string;
+  children: React.ReactNode;
+}
 
 export default function Link({page, children}
-  // : LinkProps
+  : LinkProps
 ) {
   const [status, setStatus] = useState(STATUS.NORMAL);
 

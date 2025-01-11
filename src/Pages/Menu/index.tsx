@@ -1,13 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import Button from '../../Components/Button';
 import * as Styled from './style';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import baseUrl from '../../Config/baseUrl';
 import { IUser } from '../../Config/interfaces';
-
-// import ReactAudioPlayer from 'react-audio-player';
-
 
 import ambientMusic from '../../assets/songs/default_calm.mp3';
 

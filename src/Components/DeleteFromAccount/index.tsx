@@ -1,5 +1,4 @@
 import { toast } from 'react-toastify';
-import Button from '../Button';
 import * as Styled from './style';
 import axios from 'axios';
 import baseUrl from '../../Config/baseUrl';

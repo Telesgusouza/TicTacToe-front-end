@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 
 import * as Styled from './style';
 import Button from '../../Components/Button';
-import { IBoard, IBoardWS, ICountMatches, IFriends, IMatch, IUser, IVictory } from "../../Config/interfaces";
+import { IBoard, IBoardWS, ICountMatches, IMatch, IUser, IVictory } from "../../Config/interfaces";
 
 import logoImg from '../../assets/logo.svg';
 import IconXTurn from '../../assets/icon-x-turn.svg';
@@ -57,7 +57,6 @@ function Home() {
     const [pauseMatch, setPauseMatch] = useState<boolean>(false);
     const [adversaryPhoto, setAdversaryPhoto] = useState<string | null>(null);
     const [infoAdversaryToggle, setInfoAdversaryToggle] = useState<boolean>(false);
-    const [matchClosed, setMatchClosed] = useState(false);
 
     const { match, idMatch } = useParams();
 
@@ -201,7 +200,6 @@ function Home() {
                     console.log('Connected to WebSocket server');
                     keepAlive();
                     setStatusOnlie({ loading: false, text: "" });
-                    setMatchClosed(false); // Limpe a flag aqui
 
                     newWs.send("view board");
                 };
@@ -575,10 +573,7 @@ function Home() {
                         replace: true
                     });
 
-                    // cleanWs();
                     setWs(null);
-
-                    // setMatchClosed(true);
 
                     return;
                 }
@@ -616,14 +611,12 @@ function Home() {
 
         setWs(null);
         setBoard(initialBoard);
-        // setMatchClosed(false); // Adicione esta linha
     }
 
     function closeOnline() {
         if (ws) {
             ws.send("close match");
 
-            // setMatchClosed(true);
             // ws.close()
 
 
