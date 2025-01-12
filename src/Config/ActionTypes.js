@@ -1,0 +1,6 @@
+export default {
+    SAVE_USER: "SAVE_USER",
+    WS_MATCH: "WS_MATCH",
+    AUDIO: "AUDIO",
+    ISPLAYING_AUDIO: "ISPLAYING_AUDIO"
+};

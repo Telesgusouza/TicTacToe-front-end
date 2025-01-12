@@ -18,7 +18,7 @@
     "react-toastify": "^10.0.5",
     "redux": "^5.0.1",
     "save-dev": "^0.0.1-security",
-    "styled-components": "^6.1.12"
+    "styled-components": "^6.1.14"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
