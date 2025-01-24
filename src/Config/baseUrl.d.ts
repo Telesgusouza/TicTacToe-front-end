@@ -1,2 +1,2 @@
-declare const baseUrl = "http://localhost:8080/api/v1";
+declare const baseUrl = "https://tictactoe-backend-z32w.onrender.com/api/v1";
 export default baseUrl;

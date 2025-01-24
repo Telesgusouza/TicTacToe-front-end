@@ -616,16 +616,6 @@ function Home() {
     function closeOnline() {
         if (ws) {
             ws.send("close match");
-
-            // ws.close()
-
-
-            // cleanWs();
-
-            // navigate("/menu_match_online", {
-            //     replace: true
-            // });
-
         }
     }
 
@@ -652,7 +642,6 @@ function Home() {
     return (
         <Styled.Container>
 
-            {/* <Styled.HeaderContent> */}
 
             {match === "online" && infoAdversaryToggle && infoMatch && player && (
                 <>
@@ -675,31 +664,18 @@ function Home() {
                     <h1>{statusOnlie.text}...</h1>
                 </>)}
 
-            {/* {match !== "online" && (
-                    <Styled.Header>
-                        <img onClick={() => navigate("/info_user", { replace: true })} src={photo ? photo : imgNoUser} alt="foto do usuario" />
-                    </Styled.Header>
-
-                )} */}
-
             <Styled.Header>
 
                 <Audio music={boardMusic} />
 
                 {match !== "online" && (
 
-                    // <img onClick={() => navigate("/info_user", { replace: true })} src={photo ? photo : imgNoUser} alt="foto do usuario" />
                     <Styled.ImgUser onClick={() => navigatePage("/info_user")} src={photo ? photo : imgNoUser} alt="foto do usuario" />
 
                 )}
 
-
-
-                {/* </Styled.HeaderContent> */}
             </Styled.Header>
             <Styled.ContainerBoard>
-
-
 
                 <Styled.OptionMatch>
 

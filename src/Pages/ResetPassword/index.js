@@ -71,7 +71,7 @@ export default function ResetPassword() {
         type: "password",
         wrong: false
     }), passwordConfirm = _f[0], setPasswordConfirm = _f[1];
-    var _g = useState({ view: "CODE" }), view = _g[0], setView = _g[1];
+    var _g = useState({ view: "EMAIL" }), view = _g[0], setView = _g[1];
     var _h = useState(0), timeLeft = _h[0], setTimeLeft = _h[1];
     var _j = useState(false), btnDisable = _j[0], setBtnDisable = _j[1];
     var navigate = useNavigate();
@@ -108,7 +108,7 @@ export default function ResetPassword() {
             setPasswordConfirm(__assign(__assign({}, passwordConfirm), { wrong: false }));
         }
     }, [passwordConfirm]);
-    function resetPassword() {
+    function SubmitResetPassword() {
         return __awaiter(this, void 0, void 0, function () {
             var error_1;
             return __generator(this, function (_a) {
@@ -152,6 +152,7 @@ export default function ResetPassword() {
                     case 3:
                         error_1 = _a.sent();
                         console.error("Error ao redefinidir senha: ", error_1);
+                        setPassword(__assign(__assign({}, password), { wrong: true }));
                         toast.error("Error ao refefinir senha.", { autoClose: 2400 });
                         return [3 /*break*/, 4];
                     case 4: return [2 /*return*/];
@@ -188,6 +189,8 @@ export default function ResetPassword() {
                     case 3:
                         error_2 = _a.sent();
                         toast.warn("Surgiu um erro ao verificar o código");
+                        setView({ view: "CODE" });
+                        setWrongCodeInput(true);
                         console.error("Error ", error_2);
                         return [3 /*break*/, 4];
                     case 4:
@@ -231,6 +234,8 @@ export default function ResetPassword() {
                     case 3:
                         e_1 = _a.sent();
                         toast.warn("Ocorreu um erro ao enviar email");
+                        setView({ view: "EMAIL" });
+                        setWrongEmail(true);
                         console.log("Error in email: ", e_1);
                         return [3 /*break*/, 4];
                     case 4:
@@ -289,5 +294,5 @@ export default function ResetPassword() {
             }
         }
     }
-    return (_jsxs(Styled.Container, { children: [_jsx(Styled.BtnBackPage, { children: _jsx("span", { onClick: function () { return btnBack(); }, children: "Voltar" }) }), _jsxs("article", { children: [_jsx("h1", { children: "Resetar sua senha" }), view.view === "EMAIL" && (_jsxs(_Fragment, { children: [_jsx("p", { children: "Preencha o campo email, e clique no bot\u00E3o, ser\u00E1 enviado um Email com o chave de acesso" }), _jsx(Input, { error: wrongEmail, type: "text", placeholder: 'Email', value: email, onChange: function (e) { return setEmail(e.target.value); } }), _jsx(Button, { disabled: btnDisable ? "disabled_button" : "", btn: 'BUTTON_SILVER', option: 'small', onClick: handleTicketEmail, children: "Enviar para email" })] })), view.view == "CODE" && (_jsxs(_Fragment, { children: [_jsx("p", { children: "Preencha o campo abaixo com o c\u00F3digo enviado" }), _jsx(Input, { error: wrongCodeInput, type: 'text', placeholder: 'C\u00F3digo de Acesso', value: codeInput, onChange: function (e) { return setCodeInput(e.target.value); } }), _jsx(Styled.Timer, { children: timeLeft > 0 ? (_jsxs("p", { children: ["Reenviar c\u00F3digo em : ", timeLeft] })) : (_jsx("p", { style: { cursor: 'pointer' }, onClick: handleTicketEmail, children: "Reenviar c\u00F3digo" })) }), _jsx(Button, { disabled: btnDisable ? "disabled_button" : "", btn: 'BUTTON_SILVER', option: 'small', onClick: verifyCode, children: "Confiramr c\u00F3digo" })] })), view.view === "RESET_PASSWORD" && (_jsxs(_Fragment, { children: [_jsx("p", { children: "Preencha os campos abaixo para que possa resetar sua senha" }), _jsxs(Styled.InputPassword, { children: [_jsx(Input, { error: password.wrong, type: password.type, placeholder: 'Digite sua senha', onChange: function (e) { return setPassword(__assign(__assign({}, password), { value: e.target.value })); }, value: password.value }), _jsx("img", { src: password.type === "password" ? imgLockClose : imgLockOpen, alt: "icone de fechadura aberta", onClick: function () { return toggleViewPassword("password"); } })] }), _jsxs(Styled.InputPassword, { children: [_jsx(Input, { error: passwordConfirm.wrong, type: passwordConfirm.type, placeholder: 'Confirme sua senha', onChange: function (e) { return setPasswordConfirm(__assign(__assign({}, passwordConfirm), { value: e.target.value })); }, value: passwordConfirm.value }), _jsx("img", { src: passwordConfirm.type === "password" ? imgLockClose : imgLockOpen, alt: "icone de fechadura aberta", onClick: function () { return toggleViewPassword("confirm"); } })] }), _jsx(Button, { btn: 'BUTTON_SILVER', option: 'small', onClick: resetPassword, children: " Mudar senha " })] }))] })] }));
+    return (_jsxs(Styled.Container, { children: [_jsx(Styled.BtnBackPage, { children: _jsx("span", { onClick: function () { return btnBack(); }, children: "Voltar" }) }), _jsxs("article", { children: [_jsx("h1", { children: "Resetar sua senha" }), view.view === "EMAIL" && (_jsxs(_Fragment, { children: [_jsx("p", { children: "Preencha o campo email, e clique no bot\u00E3o, ser\u00E1 enviado um Email com o chave de acesso" }), _jsx(Input, { error: wrongEmail, type: "text", placeholder: 'Email', value: email, onChange: function (e) { return setEmail(e.target.value); } }), _jsx(Button, { disabled: btnDisable ? "disabled_button" : "", btn: 'BUTTON_SILVER', option: 'small', onClick: handleTicketEmail, children: "Enviar para email" })] })), view.view == "CODE" && (_jsxs(_Fragment, { children: [_jsx("p", { children: "Preencha o campo abaixo com o c\u00F3digo enviado" }), _jsx(Input, { error: wrongCodeInput, type: 'text', placeholder: 'C\u00F3digo de Acesso', value: codeInput, onChange: function (e) { return setCodeInput(e.target.value); } }), _jsx(Styled.Timer, { children: timeLeft > 0 ? (_jsxs("p", { children: ["Reenviar c\u00F3digo em : ", timeLeft] })) : (_jsx("p", { style: { cursor: 'pointer' }, onClick: handleTicketEmail, children: "Reenviar c\u00F3digo" })) }), _jsx(Button, { disabled: btnDisable ? "disabled_button" : "", btn: 'BUTTON_SILVER', option: 'small', onClick: verifyCode, children: "Confiramr c\u00F3digo" })] })), view.view === "RESET_PASSWORD" && (_jsxs(_Fragment, { children: [_jsx("p", { children: "Preencha os campos abaixo para que possa resetar sua senha" }), _jsxs(Styled.InputPassword, { children: [_jsx(Input, { error: password.wrong, type: password.type, placeholder: 'Digite sua senha', onChange: function (e) { return setPassword(__assign(__assign({}, password), { value: e.target.value })); }, value: password.value }), _jsx("img", { src: password.type === "password" ? imgLockClose : imgLockOpen, alt: "icone de fechadura aberta", onClick: function () { return toggleViewPassword("password"); } })] }), _jsxs(Styled.InputPassword, { children: [_jsx(Input, { error: passwordConfirm.wrong, type: passwordConfirm.type, placeholder: 'Confirme sua senha', onChange: function (e) { return setPasswordConfirm(__assign(__assign({}, passwordConfirm), { value: e.target.value })); }, value: passwordConfirm.value }), _jsx("img", { src: passwordConfirm.type === "password" ? imgLockClose : imgLockOpen, alt: "icone de fechadura aberta", onClick: function () { return toggleViewPassword("confirm"); } })] }), _jsx(Button, { btn: 'BUTTON_SILVER', option: 'small', onClick: SubmitResetPassword, children: " Mudar senha " })] }))] })] }));
 }

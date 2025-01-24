@@ -41,7 +41,7 @@ export default function ResetPassword() {
         wrong: false
     });
 
-    const [view, setView] = useState<IView>({ view: "CODE" });
+    const [view, setView] = useState<IView>({ view: "EMAIL" });
     const [timeLeft, setTimeLeft] = useState<number>(0);
     const [btnDisable, setBtnDisable] = useState<boolean>(false);
 
@@ -87,7 +87,7 @@ export default function ResetPassword() {
         }
     }, [passwordConfirm]);
 
-    async function resetPassword() {
+    async function SubmitResetPassword() {
         setBtnDisable(true);
 
         if (password.value.length < 6) {
@@ -128,6 +128,10 @@ export default function ResetPassword() {
 
         } catch (error) {
             console.error("Error ao redefinidir senha: ", error);
+            setPassword({
+                ...password,
+                wrong: true
+            })
             toast.error("Error ao refefinir senha.", { autoClose: 2400 });
         }
 
@@ -156,6 +160,8 @@ export default function ResetPassword() {
 
         } catch (error) {
             toast.warn("Surgiu um erro ao verificar o código");
+            setView({ view: "CODE" });
+            setWrongCodeInput(true);
             console.error("Error ", error)
         }
 
@@ -190,6 +196,8 @@ export default function ResetPassword() {
 
         } catch (e) {
             toast.warn("Ocorreu um erro ao enviar email");
+            setView({ view: "EMAIL" });
+            setWrongEmail(true);
             console.log("Error in email: ", e)
         }
 
@@ -351,7 +359,7 @@ export default function ResetPassword() {
                             <img src={passwordConfirm.type === "password" ? imgLockClose : imgLockOpen} alt="icone de fechadura aberta" onClick={() => toggleViewPassword("confirm")} />
                         </Styled.InputPassword>
 
-                        <Button btn='BUTTON_SILVER' option='small' onClick={resetPassword} > Mudar senha </Button>
+                        <Button btn='BUTTON_SILVER' option='small' onClick={SubmitResetPassword} > Mudar senha </Button>
                     </>
                 )}
 

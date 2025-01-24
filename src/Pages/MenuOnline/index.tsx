@@ -6,13 +6,12 @@ import logoImg from '../../assets/logo.svg';
 import noUser from '../../assets/no-user.svg';
 
 import Button from "../../Components/Button";
-import Input from "../../Components/Input";
 import axios from "axios";
 import baseUrl from "../../Config/baseUrl";
-import { IFriends } from "../../Config/interfaces";
 import { toast } from "react-toastify";
 import Reload from "../../Components/Reload";
 import { AlertWarn } from "../../Components/AlertWarn";
+import baseUrlMatchMatchmaking from "../../Config/baseUrlMatchMatchmaking";
 
 function MenuOnline() {
     const [photo, setPhoto] = useState<string | null>(null);
@@ -20,8 +19,6 @@ function MenuOnline() {
     const [closeQueue, setCloseQueue] = useState<boolean>(false);
 
     const [highLatency, setHighLatency] = useState<boolean>(false);
-
-    const [listFriends, setListFriends] = useState<IFriends[]>([]);
 
     const navigate = useNavigate();
     const [ws, setWs] = useState<WebSocket | null>(null);
@@ -38,37 +35,6 @@ function MenuOnline() {
 
     }, []);
 
-
-    useEffect(() => {
-        async function getListFriends() {
-            try {
-                const jsonToken = localStorage.getItem("token");
-
-                if (jsonToken) {
-                    const token = JSON.parse(jsonToken);
-
-                    const requestData = await axios.get(baseUrl + "/user/list_friends", {
-                        'headers': {
-                            'Authorization': `Bearer ${token}`
-                        }
-                    });
-
-                    const jsonListFriends = JSON.stringify(requestData.data);
-
-                    localStorage.setItem("list_friends", jsonListFriends);
-
-                    setListFriends(requestData.data);
-                }
-
-
-            } catch (error) {
-                console.error("Error ao trazer lista de amigos: " + error);
-            }
-        }
-
-        getListFriends();
-    }, [])
-
     useEffect(() => {
 
         async function connectWebSocket() {
@@ -78,7 +44,7 @@ function MenuOnline() {
 
                     const idUser = await handleConnectMatch();
 
-                    const newWs = new WebSocket("ws://localhost:8081/matchmaking?id_user=" + idUser.uid);
+                    const newWs = new WebSocket(baseUrlMatchMatchmaking + "/matchmaking?id_user=" + idUser.uid);
 
                     setTimeout(() => {
                         toast.warn("Erro ao encotrar partida");
@@ -283,7 +249,7 @@ function MenuOnline() {
 
                 <Styled.ContainerContent >
 
-
+                    <h1>Procurar Partida</h1>
 
                     <Button
                         onClick={queueMatch}
@@ -293,67 +259,6 @@ function MenuOnline() {
                     >
                         {loadingMatch ? <> <Reload /> </> : 'Procurar Partida'}
                     </Button>
-
-                    <Styled.SourcePlayer visible={"no_visible"} >
-
-                        <span>Procurar player por ID</span>
-                        <Input type="text" placeholder="ID" />
-
-                        <ul>
-                            { }
-                            <li>Gustavo #11111111111</li>
-                            <li>Gustavo #11111111111</li>
-                            <li>Gustavo #11111111111</li>
-                        </ul>
-
-                    </Styled.SourcePlayer>
-
-                    {listFriends.length > 0 && (
-                        <>
-                            <Styled.AccordionFriends>
-                                <strong>Amigos</strong>
-                                <ul>
-                                    {listFriends.map((resp) => (
-
-                                        <li key={resp.id} >
-                                            <img src={!resp.img ? noUser : resp.img} alt="photo" />
-                                            <div>
-                                                <strong>{resp.name}</strong>
-                                                <p>#{resp.id}</p>
-                                            </div>
-                                        </li>
-
-                                    ))}
-
-                                    <li >
-                                        <img src={noUser} alt="photo" />
-                                        <div>
-                                            <strong>Gustavo Teles de Souza</strong>
-                                            <p>#11111-1111-1111-1111-1111-1111-1111-1111-1111-11111</p>
-                                        </div>
-                                    </li>
-
-                                    <li >
-                                        <img src={noUser} alt="photo" />
-                                        <div>
-                                            <strong>Gustavo Teles de Souza</strong>
-                                            <p>#11111-1111-1111-1111-1111-1111-1111-1111-1111-11111</p>
-                                        </div>
-                                    </li>
-
-                                    <li >
-                                        <img src={noUser} alt="photo" />
-                                        <div>
-                                            <strong>Gustavo Teles de Souza</strong>
-                                            <p>#11111-1111-1111-1111-1111-1111-1111-1111-1111-11111</p>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </Styled.AccordionFriends>
-                        </>
-                    )}
-
-
 
                 </Styled.ContainerContent>
 

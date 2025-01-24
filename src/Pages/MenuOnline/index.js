@@ -41,60 +41,25 @@ import * as Styled from "./style";
 import logoImg from '../../assets/logo.svg';
 import noUser from '../../assets/no-user.svg';
 import Button from "../../Components/Button";
-import Input from "../../Components/Input";
 import axios from "axios";
 import baseUrl from "../../Config/baseUrl";
 import { toast } from "react-toastify";
 import Reload from "../../Components/Reload";
 import { AlertWarn } from "../../Components/AlertWarn";
+import baseUrlMatchMatchmaking from "../../Config/baseUrlMatchMatchmaking";
 function MenuOnline() {
     var _a = useState(null), photo = _a[0], setPhoto = _a[1];
     var _b = useState(false), loadingMatch = _b[0], setLoadingMatch = _b[1];
     var _c = useState(false), closeQueue = _c[0], setCloseQueue = _c[1];
     var _d = useState(false), highLatency = _d[0], setHighLatency = _d[1];
-    var _e = useState([]), listFriends = _e[0], setListFriends = _e[1];
     var navigate = useNavigate();
-    var _f = useState(null), ws = _f[0], setWs = _f[1];
+    var _e = useState(null), ws = _e[0], setWs = _e[1];
     useEffect(function () {
         var photoLocalStorage = localStorage.getItem("photo_user");
         if (photoLocalStorage) {
             var photoJson = JSON.parse(photoLocalStorage);
             setPhoto(photoJson.photo);
         }
-    }, []);
-    useEffect(function () {
-        function getListFriends() {
-            return __awaiter(this, void 0, void 0, function () {
-                var jsonToken, token, requestData, jsonListFriends, error_1;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            _a.trys.push([0, 3, , 4]);
-                            jsonToken = localStorage.getItem("token");
-                            if (!jsonToken) return [3 /*break*/, 2];
-                            token = JSON.parse(jsonToken);
-                            return [4 /*yield*/, axios.get(baseUrl + "/user/list_friends", {
-                                    'headers': {
-                                        'Authorization': "Bearer ".concat(token)
-                                    }
-                                })];
-                        case 1:
-                            requestData = _a.sent();
-                            jsonListFriends = JSON.stringify(requestData.data);
-                            localStorage.setItem("list_friends", jsonListFriends);
-                            setListFriends(requestData.data);
-                            _a.label = 2;
-                        case 2: return [3 /*break*/, 4];
-                        case 3:
-                            error_1 = _a.sent();
-                            console.error("Error ao trazer lista de amigos: " + error_1);
-                            return [3 /*break*/, 4];
-                        case 4: return [2 /*return*/];
-                    }
-                });
-            });
-        }
-        getListFriends();
     }, []);
     useEffect(function () {
         function connectWebSocket() {
@@ -110,7 +75,7 @@ function MenuOnline() {
                             return [4 /*yield*/, handleConnectMatch()];
                         case 2:
                             idUser = _a.sent();
-                            newWs_1 = new WebSocket("ws://localhost:8081/matchmaking?id_user=" + idUser.uid);
+                            newWs_1 = new WebSocket(baseUrlMatchMatchmaking + "/matchmaking?id_user=" + idUser.uid);
                             setTimeout(function () {
                                 toast.warn("Erro ao encotrar partida");
                                 closeQueueMatch(newWs_1);
@@ -209,7 +174,7 @@ function MenuOnline() {
     }
     function handleConnectMatch() {
         return __awaiter(this, void 0, void 0, function () {
-            var tokenJson, token, requestData, error_2, message;
+            var tokenJson, token, requestData, error_1, message;
             var _a;
             return __generator(this, function (_b) {
                 switch (_b.label) {
@@ -233,9 +198,9 @@ function MenuOnline() {
                         _b.label = 4;
                     case 4: return [3 /*break*/, 6];
                     case 5:
-                        error_2 = _b.sent();
-                        if (axios.isAxiosError(error_2)) {
-                            message = (_a = error_2.response) === null || _a === void 0 ? void 0 : _a.data.message;
+                        error_1 = _b.sent();
+                        if (axios.isAxiosError(error_1)) {
+                            message = (_a = error_1.response) === null || _a === void 0 ? void 0 : _a.data.message;
                             switch (message) {
                                 case "account already exists": {
                                     toast.error("Conta não encontrada");
@@ -269,6 +234,6 @@ function MenuOnline() {
     function handleNavigate(url) {
         navigate(url, { replace: true });
     }
-    return (_jsxs(_Fragment, { children: [_jsx(AlertWarn, { msg: "Alta latencia", show: highLatency ? "see" : "not_see" }), _jsxs(Styled.Container, { children: [_jsxs(Styled.Header, { children: [_jsx("img", { src: logoImg, alt: "logo do site", onClick: function () { return handleNavigate("/"); } }), _jsx("img", { src: photo ? photo : noUser, alt: "foto do usuario", onClick: function () { return handleNavigate("/info_user/menu_online"); }, className: "photoPerfil" })] }), _jsxs(Styled.ContainerContent, { children: [_jsx(Button, { onClick: queueMatch, btn: "BUTTON_YALLOW", option: "small", children: loadingMatch ? _jsxs(_Fragment, { children: [" ", _jsx(Reload, {}), " "] }) : 'Procurar Partida' }), _jsxs(Styled.SourcePlayer, { visible: "no_visible", children: [_jsx("span", { children: "Procurar player por ID" }), _jsx(Input, { type: "text", placeholder: "ID" }), _jsxs("ul", { children: [_jsx("li", { children: "Gustavo #11111111111" }), _jsx("li", { children: "Gustavo #11111111111" }), _jsx("li", { children: "Gustavo #11111111111" })] })] }), listFriends.length > 0 && (_jsx(_Fragment, { children: _jsxs(Styled.AccordionFriends, { children: [_jsx("strong", { children: "Amigos" }), _jsxs("ul", { children: [listFriends.map(function (resp) { return (_jsxs("li", { children: [_jsx("img", { src: !resp.img ? noUser : resp.img, alt: "photo" }), _jsxs("div", { children: [_jsx("strong", { children: resp.name }), _jsxs("p", { children: ["#", resp.id] })] })] }, resp.id)); }), _jsxs("li", { children: [_jsx("img", { src: noUser, alt: "photo" }), _jsxs("div", { children: [_jsx("strong", { children: "Gustavo Teles de Souza" }), _jsx("p", { children: "#11111-1111-1111-1111-1111-1111-1111-1111-1111-11111" })] })] }), _jsxs("li", { children: [_jsx("img", { src: noUser, alt: "photo" }), _jsxs("div", { children: [_jsx("strong", { children: "Gustavo Teles de Souza" }), _jsx("p", { children: "#11111-1111-1111-1111-1111-1111-1111-1111-1111-11111" })] })] }), _jsxs("li", { children: [_jsx("img", { src: noUser, alt: "photo" }), _jsxs("div", { children: [_jsx("strong", { children: "Gustavo Teles de Souza" }), _jsx("p", { children: "#11111-1111-1111-1111-1111-1111-1111-1111-1111-11111" })] })] })] })] }) }))] })] })] }));
+    return (_jsxs(_Fragment, { children: [_jsx(AlertWarn, { msg: "Alta latencia", show: highLatency ? "see" : "not_see" }), _jsxs(Styled.Container, { children: [_jsxs(Styled.Header, { children: [_jsx("img", { src: logoImg, alt: "logo do site", onClick: function () { return handleNavigate("/"); } }), _jsx("img", { src: photo ? photo : noUser, alt: "foto do usuario", onClick: function () { return handleNavigate("/info_user/menu_online"); }, className: "photoPerfil" })] }), _jsxs(Styled.ContainerContent, { children: [_jsx("h1", { children: "Procurar Partida" }), _jsx(Button, { onClick: queueMatch, btn: "BUTTON_YALLOW", option: "small", children: loadingMatch ? _jsxs(_Fragment, { children: [" ", _jsx(Reload, {}), " "] }) : 'Procurar Partida' })] })] })] }));
 }
 export default MenuOnline;
